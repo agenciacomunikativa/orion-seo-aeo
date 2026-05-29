@@ -552,6 +552,7 @@ body{font-family:'Lato',sans-serif;background:var(--dark);color:var(--white);min
                 <div class="modal-tabs" style="margin:-18px -18px 18px;padding:0 18px">
                   <div class="modal-tab active" onclick="switchTab('dados',this)">Dados</div>
                   <div class="modal-tab" onclick="switchTab('review',this)">Review</div>
+                  <div class="modal-tab" onclick="switchTab('descricao',this)">Descrição SEO</div>
                 </div>
                 <div id="ap-dados">
                   <div class="field-row">
@@ -602,6 +603,20 @@ body{font-family:'Lato',sans-serif;background:var(--dark);color:var(--white);min
                   </div>
                   <div class="field"><label>Veredicto</label><textarea id="ap-r-vd" rows="3" placeholder="Vale muito a pena..."></textarea></div>
                   <div class="field"><label>Review publicado?</label><select id="ap-r-pub"><option value="false">Não publicado</option><option value="true">Publicado</option></select></div>
+                </div>
+                <div id="ap-descricao" style="display:none">
+                  <div class="field"><label>Descrição Curta (WooCommerce)</label><textarea id="ap-desc-short" rows="3" style="background:var(--dark3);border:1.5px solid var(--border);border-radius:5px;color:var(--white);font-family:Lato,sans-serif;font-size:13px;padding:9px 12px;width:100%;resize:vertical;outline:none" placeholder="Clique em Gerar para criar automaticamente..."></textarea></div>
+                  <div class="field"><label>Descrição Longa / SEO (WooCommerce)</label><textarea id="ap-desc-long" rows="12" style="background:var(--dark3);border:1.5px solid var(--border);border-radius:5px;color:var(--white);font-family:Lato,sans-serif;font-size:13px;padding:9px 12px;width:100%;resize:vertical;outline:none;line-height:1.6" placeholder="Clique em Gerar para criar automaticamente..."></textarea></div>
+                  <div style="display:flex;gap:8px;margin-top:4px">
+                    <button class="btn btn-gold" style="flex:1;padding:10px;font-size:12px" onclick="genDescricao()">⚡ Gerar Descrição SEO Automática</button>
+                    <button class="btn btn-out" style="padding:10px 12px;font-size:11px" onclick="copyDesc()">📋 Copiar</button>
+                  </div>
+                  <div style="margin-top:10px;font-size:10px;color:#444;line-height:1.8;padding:10px 12px;background:rgba(184,134,11,.05);border-radius:4px;border:1px solid rgba(184,134,11,.1)">
+                    <strong style="color:var(--gold)">Como usar no WooCommerce/WordPress:</strong><br>
+                    1. Descrição Curta → aba "Descrição Curta" do produto<br>
+                    2. Descrição Longa → aba "Descrição" do produto (HTML ou Gutenberg)<br>
+                    3. Inclua as keywords nas primeiras 100 palavras para SEO on-page
+                  </div>
                 </div>
                 <div style="display:flex;gap:8px;margin-top:18px">
                   <button class="btn btn-gold" style="flex:1;padding:11px;font-size:13px" onclick="saveProd()">💾 Salvar no Supabase</button>
@@ -926,6 +941,8 @@ function clearProdForm(){
   document.getElementById('apTitle').textContent='Novo Produto';
   document.getElementById('apIcon').textContent='➕';
   document.querySelectorAll('#screen-addproduto input[type=text],#screen-addproduto input[type=number],#screen-addproduto textarea').forEach(el=>el.value='');
+  document.getElementById('ap-desc-short').value='';
+  document.getElementById('ap-desc-long').value='';
 }
 
 function switchTab(tab,el){
@@ -933,6 +950,7 @@ function switchTab(tab,el){
   el.classList.add('active');
   document.getElementById('ap-dados').style.display=tab==='dados'?'':'none';
   document.getElementById('ap-review').style.display=tab==='review'?'':'none';
+  document.getElementById('ap-descricao').style.display=tab==='descricao'?'':'none';
 }
 
 // ── SAVE TO HISTORY ──
@@ -1265,6 +1283,97 @@ function notify(msg,type='info'){
   const n=document.getElementById('notif');
   n.textContent=msg;n.className=`notif on ${type}`;
   setTimeout(()=>n.classList.remove('on'),3500);
+}
+
+// ── GERAÇÃO AUTOMÁTICA DE DESCRIÇÃO SEO ──
+function genDescricao(){
+  const name = document.getElementById('ap-name').value || '—';
+  const brand = document.getElementById('ap-brand').value || '—';
+  const seoName = document.getElementById('ap-seo').value || (brand+' '+name);
+  const tipo = document.getElementById('ap-tipo').value || 'Eau de Toilette';
+  const vol = document.getElementById('ap-vol').value || '100ml';
+  const genderVal = document.getElementById('ap-gender').value;
+  const genderLabel = genderVal === 'fem' ? 'feminino' : genderVal === 'uni' ? 'unissex' : 'masculino';
+  const fix = document.getElementById('ap-fix').value || '6–8h';
+  const proj = document.getElementById('ap-proj').value || 'Moderada';
+  const cost = document.getElementById('ap-cost').value || 'Bom';
+  const badge = document.getElementById('ap-badge').value || '';
+  const top = document.getElementById('ap-r-top').value || '—';
+  const heart = document.getElementById('ap-r-heart').value || '—';
+  const base = document.getElementById('ap-r-base').value || '—';
+  const oc = document.getElementById('ap-r-oc').value || 'uso diário';
+  const se = document.getElementById('ap-r-se').value || 'todas as estações';
+  const verdict = document.getElementById('ap-r-vd').value || '';
+  const price = document.getElementById('ap-price').value || '';
+  const rating = document.getElementById('ap-rating').value || '';
+  const revCount = document.getElementById('ap-rev').value || '';
+
+  // Descrição curta (150–160 chars, keyword no início)
+  const projLow = proj.toLowerCase();
+  const ocLow = oc.toLowerCase().replace('todas as ocasiões','uso diário');
+  const shortDesc = `${seoName} é um perfume importado ${genderLabel} com fixação de ${fix} e projeção ${projLow}. Ideal para ${ocLow}. ${badge ? badge + '.' : ''}`.trim();
+
+  // Determinar família olfativa baseado nas notas
+  let familia = 'amadeirada';
+  const allNotes = (top+heart+base).toLowerCase();
+  if(allNotes.includes('aquát')||allNotes.includes('marine')||allNotes.includes('hortelã')) familia = 'fresca aquática';
+  else if(allNotes.includes('baunilha')||allNotes.includes('âmbar')&&allNotes.includes('especiar')) familia = 'oriental doce';
+  else if(allNotes.includes('cítrico')||allNotes.includes('bergamota')||allNotes.includes('limão')) familia = 'cítrica fresca';
+  else if(allNotes.includes('lavanda')||allNotes.includes('fougère')) familia = 'aromática fougère';
+  else if(allNotes.includes('couro')||allNotes.includes('patchouli')||allNotes.includes('madeira')) familia = 'amadeirada sofisticada';
+
+  // Tipo em português
+  const tipoLabel = tipo.includes('Parfum') && !tipo.includes('Eau') ? 'Extrait de Parfum' : tipo;
+  const tipoNote = tipo.includes('EDP')||tipo.toLowerCase().includes('eau de parfum') ? 
+    'Como Eau de Parfum, a concentração superior garante fixação prolongada e projeção mais intensa.' :
+    tipo.includes('Parfum') ? 'A altíssima concentração de Extrait de Parfum garante fixação excepcional de longa duração.' :
+    'Como Eau de Toilette, é mais leve e refrescante, ideal para uso diário.';
+
+  // Texto do verdict para a descrição
+  const verdictFinal = verdict || `O ${brand} ${name} ${cost==='Excelente'||cost==='Ótimo' ? 'entrega excelente custo-benefício' : 'é uma escolha sofisticada'} para quem busca um perfume importado ${genderLabel} com performance real.`;
+
+  const ratingLine = rating ? `Avaliação: ${rating}/5${revCount ? ' com '+revCount+' avaliações verificadas na Amazon Brasil' : ''}.` : '';
+
+  const longDesc = `<h2>Sobre o ${brand} ${name}</h2>
+<p>${seoName} é um perfume importado ${genderLabel} da família <strong>${familia}</strong>. ${tipoNote} Fixação de <strong>${fix}</strong> e projeção <strong>${projLow}</strong> tornam esta fragrância ideal para <strong>${ocLow}</strong>${se!=='Todas as estações'?' em '+se.toLowerCase():''}.${ratingLine ? ' '+ratingLine : ''}</p>
+
+<h2>Pirâmide Olfativa</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Notas de Topo</strong></td><td>${top}</td></tr>
+    <tr><td><strong>Notas de Coração</strong></td><td>${heart}</td></tr>
+    <tr><td><strong>Notas de Fundo</strong></td><td>${base}</td></tr>
+  </tbody>
+</table>
+
+<h2>Fixação e Projeção</h2>
+<p>O <strong>${brand} ${name}</strong> tem fixação de <strong>${fix}</strong> com projeção <strong>${projLow}</strong>. ${tipoNote} Para maximizar a duração, aplique nos pulsos, pescoço e atrás das orelhas sobre pele limpa e levemente hidratada.</p>
+
+<h2>Para Quem é Indicado</h2>
+<p>Recomendado para ${genderLabel === 'unissex' ? 'homens e mulheres' : 'homens'} que buscam um perfume importado ${familia} para <strong>${ocLow}</strong>${se!=='Todas as estações'?', especialmente em '+se.toLowerCase():''}. ${badge ? badge + '.' : ''}</p>
+
+<h2>Vale a Pena Comprar?</h2>
+<p>${verdictFinal}</p>
+
+<p><em>Custo-benefício: ${cost} | Disponível na Amazon Brasil com nota fiscal e garantia de autenticidade.</em></p>`;
+
+  document.getElementById('ap-desc-short').value = shortDesc;
+  document.getElementById('ap-desc-long').value = longDesc.trim();
+  notify('✓ Descrição SEO gerada! Revise e copie para o WordPress.','success');
+}
+
+function copyDesc(){
+  const s = document.getElementById('ap-desc-short').value;
+  const l = document.getElementById('ap-desc-long').value;
+  if(!s && !l){notify('Gere a descrição primeiro','error');return;}
+  const full = '=== DESCRIÇÃO CURTA ===
+
+'+s+'
+
+=== DESCRIÇÃO LONGA (HTML) ===
+
+'+l;
+  navigator.clipboard.writeText(full).then(()=>notify('✓ Descrições copiadas! Cole no WooCommerce.','success'));
 }
 
 // ── AUTO CONNECT ──
