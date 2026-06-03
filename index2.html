@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORION — CMS Multi-Projeto</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
+:root{
+  --bg:#060708;--bg2:#0c0e10;--bg3:#121416;--bg4:#181b1e;--bg5:#1e2124;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);--b3:rgba(255,255,255,.16);
+  --tx:#edeae4;--tx2:#807d78;--tx3:#454340;
+  --gr:#7bff6a;--gr2:#55e043;--gr-d:rgba(123,255,106,.08);--gr-b:rgba(123,255,106,.22);
+  --am:#ffb340;--am-d:rgba(255,179,64,.08);--am-b:rgba(255,179,64,.22);
+  --bl:#5aadf5;--bl-d:rgba(90,173,245,.08);--bl-b:rgba(90,173,245,.22);
+  --rd:#ff5454;--rd-d:rgba(255,84,84,.08);--rd-b:rgba(255,84,84,.22);
+  --pu:#b87fff;--pu-d:rgba(184,127,255,.08);--pu-b:rgba(184,127,255,.22);
+  --sh:#f04f2d;--sh-d:rgba(240,79,45,.08);--sh-b:rgba(240,79,45,.22);
+  --az:#ff9900;--az-d:rgba(255,153,0,.08);--az-b:rgba(255,153,0,.22);
+  --sw:252px;--r:8px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;overflow-x:hidden}
+
+/* SIDEBAR */
+.sb{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg2);border-right:1px solid var(--b1);z-index:300;display:flex;flex-direction:column}
+.sb-hd{padding:18px 16px 14px;border-bottom:1px solid var(--b1)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sb-ico{width:32px;height:32px;background:var(--gr);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#050607;flex-shrink:0}
+.sb-name{font-weight:800;font-size:16px;letter-spacing:-.03em}
+.sb-proj-sel{width:100%;padding:7px 10px;background:var(--bg4);border:1px solid var(--b2);border-radius:8px;color:var(--tx);font-size:12px;font-family:'Outfit',sans-serif;outline:none;cursor:pointer;font-weight:600}
+.sb-proj-sel:focus{border-color:var(--gr)}
+.sb-nav{flex:1;overflow-y:auto;padding:6px 8px}
+.sb-sec{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;padding:12px 8px 4px}
+.nb{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;color:var(--tx2);transition:all .15s;width:100%;border:none;background:transparent;text-align:left}
+.nb:hover{background:var(--bg3);color:var(--tx)}
+.nb.on{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.nb .ni{font-size:13px;width:15px;text-align:center;flex-shrink:0}
+.nb .nc{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;margin-left:auto;padding:1px 6px;border-radius:20px;background:var(--bg4);color:var(--tx3)}
+.nb.on .nc{background:var(--gr-d);color:var(--gr)}
+.sb-ft{padding:12px 14px;border-top:1px solid var(--b1)}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);display:inline-block;margin-right:6px;animation:pl 2s infinite}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+.sb-st{font-size:11px;color:var(--tx2);display:flex;align-items:center}
+.prog-bar{height:2px;background:var(--bg4);border-radius:1px;margin-top:8px;overflow:hidden}
+.prog-fill{height:100%;background:var(--gr);border-radius:1px;transition:width .5s}
+
+/* MAIN */
+.main{margin-left:var(--sw)}
+.topbar{position:sticky;top:0;z-index:200;background:rgba(6,7,8,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--b1);padding:0 28px;height:50px;display:flex;align-items:center;justify-content:space-between}
+.tb-l{display:flex;align-items:center;gap:10px}
+.tb-t{font-weight:800;font-size:14px;letter-spacing:-.02em}
+.tb-badge{font-family:'Fira Code',monospace;font-size:8px;padding:2px 8px;border-radius:20px;font-weight:700}
+.tb-r{display:flex;gap:7px;align-items:center}
+.tbtn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s}
+.tbtn:hover{background:var(--bg3);color:var(--tx)}
+.tbtn.p{background:var(--gr);border-color:var(--gr);color:#050607}
+.tbtn.p:hover{background:var(--gr2)}
+
+/* CONN STATUS */
+.conn-bar{padding:8px 28px;font-family:'Fira Code',monospace;font-size:10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--b1)}
+.conn-bar.ok{background:var(--gr-d);color:var(--gr)}
+.conn-bar.err{background:var(--rd-d);color:var(--rd)}
+.conn-bar.loading{background:var(--am-d);color:var(--am)}
+
+/* CONFIG PANEL */
+.cfg-panel{display:none;padding:14px 28px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cfg-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.cfg-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px}
+.cfg-field label{font-size:10px;font-weight:700;color:var(--tx3);font-family:'Fira Code',monospace;letter-spacing:.05em;text-transform:uppercase}
+.cfg-field input{padding:8px 11px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px;color:var(--tx);font-size:11px;font-family:'Fira Code',monospace;outline:none;transition:border-color .15s}
+.cfg-field input:focus{border-color:var(--gr)}
+.cfg-status{font-family:'Fira Code',monospace;font-size:10px;margin-top:6px}
+
+/* PAGES */
+.page{display:none;padding:26px 28px;animation:fu .22s ease}
+.page.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:20px}
+.ph-eye{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.ph-t{font-weight:900;font-size:24px;letter-spacing:-.04em;line-height:1.1;margin-bottom:5px}
+.ph-s{font-size:13px;color:var(--tx2)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:20px}
+.sc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);padding:14px 16px}
+.sv{font-weight:900;font-size:24px;letter-spacing:-.04em;line-height:1}
+.sv.g{color:var(--gr)}.sv.a{color:var(--am)}.sv.b{color:var(--bl)}.sv.p{color:var(--pu)}
+.sl{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);margin-top:4px;letter-spacing:.05em;text-transform:uppercase}
+
+/* FILTERS */
+.fbar{display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.fi{flex:1;min-width:180px;padding:8px 13px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;color:var(--tx);font-size:13px;font-family:'Outfit',sans-serif;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--gr)}
+.fi::placeholder{color:var(--tx3)}
+.fsel{padding:8px 11px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;color:var(--tx2);font-size:12px;font-family:'Outfit',sans-serif;outline:none;cursor:pointer}
+.ftab{padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);transition:all .15s;font-family:'Outfit',sans-serif}
+.ftab:hover{background:var(--bg3);color:var(--tx)}
+.ftab.on{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
+
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:10px}
+.pc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;transition:all .18s}
+.pc:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.pc.pub{border-color:var(--gr-b)}
+.pc-img{width:100%;height:106px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;position:relative}
+.pc-img img{width:100%;height:100%;object-fit:cover}
+.pc-hd{padding:12px 14px 8px;display:flex;align-items:flex-start;gap:10px}
+.pc-info{flex:1;min-width:0}
+.pc-name{font-weight:800;font-size:13px;line-height:1.3;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-brand{font-size:10px;color:var(--tx3);margin-bottom:5px;font-family:'Fira Code',monospace}
+.pc-cl{font-family:'Fira Code',monospace;font-size:8px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;display:inline-block}
+.cl-whey{background:var(--bl-d);color:var(--bl);border:1px solid var(--bl-b)}
+.cl-pre{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.cl-termo{background:var(--rd-d);color:var(--rd);border:1px solid var(--rd-b)}
+.cl-vit,.cl-cabelo{background:var(--pu-d);color:var(--pu);border:1px solid var(--pu-b)}
+.cl-massa{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.cl-other{background:var(--bg4);color:var(--tx2);border:1px solid var(--b1)}
+/* Perfumes clusters */
+.cl-masc,.cl-masculino{background:var(--bl-d);color:var(--bl);border:1px solid var(--bl-b)}
+.cl-fem,.cl-feminino{background:var(--pu-d);color:var(--pu);border:1px solid var(--pu-b)}
+.cl-uni,.cl-unissex{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.sbadge{font-family:'Fira Code',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.sb-pub{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.sb-draft{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
+.sb-review{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.pc-meta{padding:0 14px 8px;display:flex;gap:5px;flex-wrap:wrap}
+.mp{font-size:10px;padding:2px 8px;border-radius:20px;display:flex;align-items:center;gap:3px}
+.mp-s{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.mp-p{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.mp-k{background:var(--bl-d);color:var(--bl);border:1px solid var(--bl-b)}
+.pc-aff{padding:0 14px 8px;display:flex;gap:5px}
+.lb{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;display:flex;align-items:center;gap:3px;cursor:pointer;transition:opacity .15s}
+.lb:hover{opacity:.8}
+.lb-az{background:var(--az-d);color:var(--az);border:1px solid var(--az-b)}
+.lb-sh{background:var(--sh-d);color:var(--sh);border:1px solid var(--sh-b)}
+.lb-no{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
+.pc-act{padding:9px 14px;border-top:1px solid var(--b1);display:flex;gap:5px;background:var(--bg3)}
+.pa{flex:1;padding:6px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;text-align:center}
+.pa:hover{background:var(--bg4);color:var(--tx)}
+.pa.edit{border-color:var(--bl-b);color:var(--bl)}.pa.edit:hover{background:var(--bl-d)}
+.pa.pub{border-color:var(--gr-b);color:var(--gr)}.pa.pub:hover{background:var(--gr-d)}
+.pa.del{border-color:var(--rd-b);color:var(--rd)}.pa.del:hover{background:var(--rd-d)}
+.pa.unp{border-color:var(--am-b);color:var(--am)}.pa.unp:hover{background:var(--am-d)}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(5,6,7,.9);backdrop-filter:blur(10px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s}
+.ov.on{opacity:1;pointer-events:all}
+.mdl{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:700px;max-height:92vh;overflow-y:auto;transform:scale(.97);transition:transform .22s}
+.ov.on .mdl{transform:scale(1)}
+.mhd{padding:18px 22px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:10}
+.mt{font-weight:900;font-size:17px;letter-spacing:-.03em}
+.mcl{width:26px;height:26px;border-radius:6px;background:var(--bg4);border:1px solid var(--b1);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--tx2);transition:all .15s}
+.mcl:hover{background:var(--rd-d);border-color:var(--rd-b);color:var(--rd)}
+.mbd{padding:18px 22px 22px}
+.fs{margin-bottom:18px}
+.fst{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--b1)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg1{grid-template-columns:1fr}
+.fd{display:flex;flex-direction:column;gap:4px}
+.fd label{font-size:11px;font-weight:700;color:var(--tx2);letter-spacing:.02em}
+.fd input,.fd select,.fd textarea{padding:8px 11px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;color:var(--tx);font-size:13px;font-family:'Outfit',sans-serif;outline:none;transition:border-color .15s;resize:vertical}
+.fd input:focus,.fd select:focus,.fd textarea:focus{border-color:var(--gr);background:var(--bg4)}
+.fd input::placeholder,.fd textarea::placeholder{color:var(--tx3)}
+.fhint{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);margin-top:2px}
+.aw{position:relative}
+.ai{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;z-index:1}
+.aff-section{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:14px;margin-top:4px}
+.aff-plat{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.img-drop{border:2px dashed var(--b2);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);margin-bottom:8px}
+.img-drop:hover{border-color:var(--gr-b);background:var(--gr-d)}
+.img-prev{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px;display:none}
+.img-prev.show{display:block}
+.mft{padding:12px 22px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;gap:9px;background:var(--bg2);position:sticky;bottom:0}
+.mft-l{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3)}
+.mft-a{display:flex;gap:7px}
+.btn{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;border:1px solid var(--b1);background:transparent;color:var(--tx2);transition:all .15s}
+.btn:hover{background:var(--bg3);color:var(--tx)}
+.btn.p{background:var(--gr);border-color:var(--gr);color:#050607}
+.btn.p:hover{background:var(--gr2)}
+.btn.pub{background:var(--gr-d);border-color:var(--gr-b);color:var(--gr)}
+.btn.dng{background:var(--rd-d);border-color:var(--rd-b);color:var(--rd)}
+
+/* CONFIRM */
+.conf{background:var(--bg2);border:1px solid var(--rd-b);border-radius:var(--rl);width:100%;max-width:380px;padding:22px;text-align:center}
+.conf-i{font-size:30px;margin-bottom:10px}
+.conf-t{font-weight:900;font-size:16px;margin-bottom:5px}
+.conf-d{font-size:12px;color:var(--tx2);margin-bottom:16px}
+.conf-a{display:flex;gap:8px;justify-content:center}
+
+/* KEYWORDS */
+.ktw{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden}
+.kt{width:100%;border-collapse:collapse}
+.kt th{padding:9px 12px;font-family:'Fira Code',monospace;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);border-bottom:1px solid var(--b1);text-align:left;background:var(--bg3)}
+.kt td{padding:8px 12px;border-bottom:1px solid var(--b1);font-size:12px;color:var(--tx2);vertical-align:middle}
+.kt tr:last-child td{border-bottom:none}
+.kt tr:hover td{background:var(--bg3)}
+.kwn{font-family:'Fira Code',monospace;font-size:11px;color:var(--tx);font-weight:500}
+.kwu{font-family:'Fira Code',monospace;font-size:10px;color:var(--bl)}
+.vn{font-weight:900;font-size:13px;color:var(--am)}
+.vbw{width:70px;height:3px;background:var(--bg5);border-radius:2px;margin-top:3px;overflow:hidden}
+.vbf{height:100%;background:var(--am);border-radius:2px}
+.kdc{font-family:'Fira Code',monospace;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px}
+.kd-e{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.kd-m{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.kd-h{background:var(--rd-d);color:var(--rd);border:1px solid var(--rd-b)}
+.kd-n{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
+.ck-btn{font-size:9px;font-weight:700;padding:3px 9px;border-radius:5px;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap}
+.ck-btn:hover{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
+
+/* OVERVIEW */
+.ovg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.ovc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);padding:16px 18px}
+.ovt{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.ovl{display:flex;flex-direction:column;gap:5px}
+.ovi{display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 9px;border-radius:6px;background:var(--bg3)}
+.ovi-n{flex:1;font-weight:600;color:var(--tx)}
+.ovi-v{font-family:'Fira Code',monospace;font-size:10px;font-weight:700}
+
+/* TOAST */
+.toasts{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;min-width:220px;transform:translateY(6px);opacity:0;transition:all .28s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:var(--gr-b);background:var(--gr-d);color:var(--gr)}
+.toast.er{border-color:var(--rd-b);background:var(--rd-d);color:var(--rd)}
+.toast.inf{border-color:var(--bl-b);background:var(--bl-d);color:var(--bl)}
+
+/* LOADING */
+.loading{text-align:center;padding:48px;color:var(--tx3)}
+.spinner{width:28px;height:28px;border:2px solid var(--b1);border-top-color:var(--gr);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:var(--tx3)}
+.empty-i{font-size:34px;margin-bottom:10px}
+.empty-t{font-weight:700;font-size:15px;color:var(--tx2);margin-bottom:4px}
+
+.div{height:1px;background:var(--b1);margin:18px 0}
+.sl2{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-hd">
+    <div class="sb-logo">
+      <div class="sb-ico">O</div>
+      <div class="sb-name">ORION</div>
+    </div>
+    <select class="sb-proj-sel" id="proj-sel" onchange="switchProject(this.value)">
+      <option value="">⌛ Carregando projetos...</option>
+    </select>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Principal</div>
+    <button class="nb on" onclick="goTo('dashboard')"><span class="ni">⬡</span>Dashboard</button>
+    <button class="nb" onclick="goTo('produtos')"><span class="ni">📦</span>Produtos<span class="nc" id="nb-t">0</span></button>
+    <button class="nb" onclick="goTo('keywords')"><span class="ni">🔑</span>Keywords<span class="nc" id="nb-k">0</span></button>
+    <div class="sb-sec">Conteúdo</div>
+    <button class="nb" onclick="goTo('publicados')"><span class="ni">✅</span>Publicados<span class="nc" id="nb-p">0</span></button>
+    <button class="nb" onclick="goTo('rascunhos')"><span class="ni">📝</span>Rascunhos<span class="nc" id="nb-d">0</span></button>
+    <div class="sb-sec">Projeto</div>
+    <button class="nb" onclick="goTo('afiliados')"><span class="ni">💰</span>Afiliados</button>
+  </div>
+  <div class="sb-ft">
+    <div class="sb-st"><span class="sb-dot"></span><span id="sb-domain">Conectando...</span></div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:2px;font-family:'Fira Code',monospace">Supabase · Cloudflare · GitHub</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-l">
+      <span class="tb-t" id="tb-title">Dashboard</span>
+      <span class="tb-badge" id="tb-badge" style="background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)">v2.0</span>
+    </div>
+    <div class="tb-r">
+      <button class="tbtn" onclick="toggleCfg()">⚙ Config</button>
+      <button class="tbtn p" onclick="openModal('new')">+ Novo Produto</button>
+    </div>
+  </div>
+
+  <!-- CONFIG PANEL -->
+  <div class="cfg-panel" id="cfg-panel">
+    <div class="cfg-row">
+      <div class="cfg-field" style="flex:2">
+        <label>Supabase URL</label>
+        <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
+      </div>
+      <div class="cfg-field" style="flex:3">
+        <label>Anon Key</label>
+        <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+      </div>
+      <button class="btn p" onclick="saveConfig()">Conectar</button>
+    </div>
+    <div id="cfg-status" class="cfg-status"></div>
+  </div>
+
+  <!-- CONN BAR -->
+  <div class="conn-bar loading" id="conn-bar">⌛ Conectando ao Supabase...</div>
+
+  <!-- DASHBOARD -->
+  <div class="page on" id="page-dashboard">
+    <div class="ph">
+      <div class="ph-eye">ORION · Multi-Projeto</div>
+      <div class="ph-t" id="dash-title">Carregando...</div>
+      <div class="ph-s" id="dash-sub">Aguarde...</div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="sv g" id="st-t">–</div><div class="sl">Produtos</div></div>
+      <div class="sc"><div class="sv a" id="st-p">–</div><div class="sl">Publicados</div></div>
+      <div class="sc"><div class="sv b" id="st-d">–</div><div class="sl">Rascunhos</div></div>
+      <div class="sc"><div class="sv p" id="st-l">–</div><div class="sl">Com afiliados</div></div>
+    </div>
+    <div class="ovg">
+      <div class="ovc">
+        <div class="ovt">Produtos por cluster</div>
+        <div class="ovl" id="ov-clusters"><div style="font-size:12px;color:var(--tx3)">Carregando...</div></div>
+      </div>
+      <div class="ovc">
+        <div class="ovt">Links afiliados</div>
+        <div class="ovl">
+          <div class="ovi"><span class="ovi-n">🟠 Amazon</span><span class="ovi-v" style="color:var(--az)" id="ov-az">–</span></div>
+          <div class="ovi"><span class="ovi-n">🔴 Shopee</span><span class="ovi-v" style="color:var(--sh)" id="ov-sh">–</span></div>
+          <div class="ovi"><span class="ovi-n">Sem links</span><span class="ovi-v" style="color:var(--tx3)" id="ov-nl">–</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="sl2">Acesso rápido</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn p" onclick="openModal('new')">+ Novo produto</button>
+      <button class="btn" onclick="goTo('keywords')">🔑 Keywords</button>
+      <button class="btn" onclick="goTo('afiliados')">💰 Afiliados</button>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="page" id="page-produtos">
+    <div class="ph"><div class="ph-eye">Gerenciamento</div><div class="ph-t">Produtos</div><div class="ph-s">Gerencie produtos com links afiliados Amazon e Shopee</div></div>
+    <div class="fbar">
+      <input class="fi" type="text" placeholder="🔍 Buscar produto..." oninput="filterP(this.value)" id="srch">
+      <select class="fsel" onchange="filterCl(this.value)" id="cl-filter">
+        <option value="">Todos clusters</option>
+      </select>
+      <button class="ftab on" onclick="filterSt('all',this)">Todos</button>
+      <button class="ftab" onclick="filterSt('published',this)">✅ Publicados</button>
+      <button class="ftab" onclick="filterSt('draft',this)">📝 Rascunhos</button>
+      <button class="ftab" onclick="filterSt('review',this)">👁 Revisão</button>
+    </div>
+    <div class="pgrid" id="pgrid"></div>
+  </div>
+
+  <!-- PUBLICADOS -->
+  <div class="page" id="page-publicados">
+    <div class="ph"><div class="ph-eye">Conteúdo</div><div class="ph-t">Publicados</div></div>
+    <div class="pgrid" id="g-pub"></div>
+  </div>
+
+  <!-- RASCUNHOS -->
+  <div class="page" id="page-rascunhos">
+    <div class="ph"><div class="ph-eye">Conteúdo</div><div class="ph-t">Rascunhos</div></div>
+    <div class="pgrid" id="g-draft"></div>
+  </div>
+
+  <!-- KEYWORDS -->
+  <div class="page" id="page-keywords">
+    <div class="ph"><div class="ph-eye">SEO/AEO</div><div class="ph-t">Keywords</div><div class="ph-s">Clique em "+ Criar produto" para iniciar o cadastro a partir de uma keyword.</div></div>
+    <div class="fbar">
+      <input class="fi" type="text" placeholder="🔍 Buscar keyword..." oninput="filterKw(this.value)">
+      <button class="ftab on" onclick="filterKwSt('all',this)">Todas</button>
+      <button class="ftab" onclick="filterKwSt('pendente',this)">Pendentes</button>
+      <button class="ftab" onclick="filterKwSt('em_producao',this)">Em produção</button>
+      <button class="ftab" onclick="filterKwSt('publicado',this)">Publicadas</button>
+    </div>
+    <div class="ktw"><table class="kt"><thead><tr><th>Keyword</th><th>Volume</th><th>KD</th><th>Tipo</th><th>Status</th><th>Ação</th></tr></thead><tbody id="kw-tb"></tbody></table></div>
+  </div>
+
+  <!-- AFILIADOS -->
+  <div class="page" id="page-afiliados">
+    <div class="ph"><div class="ph-eye">Monetização</div><div class="ph-t">Afiliados</div></div>
+    <div class="stats">
+      <div class="sc"><div class="sv a">8–13%</div><div class="sl">Comissão Amazon</div></div>
+      <div class="sc"><div class="sv" style="color:var(--sh);font-size:18px">3–15%</div><div class="sl">Comissão Shopee</div></div>
+      <div class="sc"><div class="sv b">24h</div><div class="sl">Cookie Amazon</div></div>
+      <div class="sc"><div class="sv p">7 dias</div><div class="sl">Cookie Shopee</div></div>
+    </div>
+    <div class="ovg">
+      <div class="ovc" style="border-color:var(--az-b)">
+        <div class="ovt" style="color:var(--az)">🟠 Amazon Associates</div>
+        <p style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:12px">Botão principal de cada review. Cookie cobre todo o carrinho.</p>
+        <a href="https://associados.amazon.com.br" target="_blank" class="btn" style="display:inline-block;text-decoration:none;font-size:12px">Acessar painel →</a>
+      </div>
+      <div class="ovc" style="border-color:var(--sh-b)">
+        <div class="ovt" style="color:var(--sh)">🔴 Shopee Afiliados</div>
+        <p style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:12px">Botão "Ver opção mais barata". Cookie de 7 dias.</p>
+        <a href="https://affiliate.shopee.com.br" target="_blank" class="btn" style="display:inline-block;text-decoration:none;font-size:12px">Acessar painel →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="ov" id="modal-ov" onclick="closeModalOv(event)">
+  <div class="mdl">
+    <div class="mhd">
+      <div class="mt" id="modal-t">Novo Produto</div>
+      <button class="mcl" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbd">
+      <!-- Imagem -->
+      <div class="fs">
+        <div class="fst">📷 Imagem</div>
+        <div class="img-drop" onclick="document.getElementById('img-file').click()" ondragover="ev.preventDefault()" ondrop="dropImg(event)">
+          <div id="img-lbl"><div style="font-size:22px;margin-bottom:4px">🖼</div><div style="font-size:12px;color:var(--tx2);font-weight:600">Clique ou arraste a imagem</div><div style="font-size:10px;color:var(--tx3)">JPG, PNG, WEBP · Máx 2MB</div></div>
+          <img id="img-prev" class="img-prev" src="" alt="">
+        </div>
+        <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(this)">
+        <div class="fd" style="margin-top:6px"><label>Ou URL da imagem</label><input type="url" id="f-img" placeholder="https://..." oninput="prevImgUrl(this.value)"><span class="fhint">URL direta da imagem (Amazon, site da marca, etc.)</span></div>
+      </div>
+      <!-- Básico -->
+      <div class="fs">
+        <div class="fst">Informações básicas</div>
+        <div class="fg"><div class="fd" style="grid-column:1/-1"><label>Nome *</label><input type="text" id="f-name" placeholder="Ex: Growth Whey Concentrado 900g"></div>
+        <div class="fd"><label>Marca *</label><input type="text" id="f-brand" placeholder="Ex: Growth Supplements"></div>
+        <div class="fd"><label>Cluster *</label><select id="f-cluster"><option value="">Selecionar...</option></select></div>
+        <div class="fd"><label>Emoji</label><input type="text" id="f-emoji" placeholder="📦" maxlength="4"></div>
+        <div class="fd"><label>Status</label><select id="f-status"><option value="draft">📝 Rascunho</option><option value="review">👁 Em Revisão</option><option value="published">✅ Publicado</option></select></div></div>
+      </div>
+      <!-- Dados -->
+      <div class="fs">
+        <div class="fst">Dados do produto</div>
+        <div class="fg fg3">
+          <div class="fd"><label>Avaliação</label><input type="number" id="f-rating" placeholder="4.7" min="0" max="5" step="0.1"></div>
+          <div class="fd"><label>Nº avaliações</label><input type="number" id="f-rcount" placeholder="5000"></div>
+          <div class="fd"><label>Preço (ex: 89–119)</label><input type="text" id="f-price" placeholder="89–119"></div>
+        </div>
+        <div class="fg" style="margin-top:9px">
+          <div class="fd"><label>Proteína por dose</label><input type="text" id="f-protein" placeholder="26g por dose"></div>
+          <div class="fd"><label>Concentração</label><select id="f-conc"><option value="">— não aplicável —</option><option value="concentrado">Concentrado</option><option value="isolado">Isolado</option><option value="hidrolisado">Hidrolisado</option><option value="blend">Blend (3W)</option></select></div>
+        </div>
+        <div class="fd fg1" style="margin-top:9px"><label>Destaque</label><input type="text" id="f-hl" placeholder="Mais vendido do Brasil · direto da fábrica"></div>
+      </div>
+      <!-- Afiliados Amazon -->
+      <div class="fs">
+        <div class="fst">🟠 Amazon</div>
+        <div class="aff-section">
+          <div class="fg">
+            <div class="fd" style="grid-column:1/-1"><label>URL do link afiliado Amazon</label><div class="aw"><span class="ai">🟠</span><input type="url" id="f-az-url" placeholder="https://amzn.to/XXXXXXX" style="padding-left:35px"></div><span class="fhint">Gerado no SiteStripe da Amazon</span></div>
+            <div class="fd"><label>Texto do botão</label><input type="text" id="f-az-btn" value="Ver preço na Amazon"></div>
+            <div class="fd"><label>Preço Amazon (opcional)</label><input type="text" id="f-az-price" placeholder="R$ 99,90"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Afiliados Shopee -->
+      <div class="fs">
+        <div class="fst">🔴 Shopee</div>
+        <div class="aff-section">
+          <div class="fg">
+            <div class="fd" style="grid-column:1/-1"><label>URL do link afiliado Shopee</label><div class="aw"><span class="ai">🔴</span><input type="url" id="f-sh-url" placeholder="https://s.shopee.com.br/XXXXXXX" style="padding-left:35px"></div><span class="fhint">Gerado no painel Shopee Afiliados</span></div>
+            <div class="fd"><label>Texto do botão</label><input type="text" id="f-sh-btn" value="Ver opção mais barata na Shopee"></div>
+            <div class="fd"><label>Preço Shopee (opcional)</label><input type="text" id="f-sh-price" placeholder="R$ 79,90"></div>
+          </div>
+        </div>
+      </div>
+      <!-- SEO -->
+      <div class="fs">
+        <div class="fst">SEO</div>
+        <div class="fg">
+          <div class="fd"><label>URL do review</label><input type="text" id="f-url" placeholder="/review/growth-whey-concentrado"></div>
+          <div class="fd"><label>Keyword principal</label><input type="text" id="f-kw" placeholder="melhor whey protein"></div>
+        </div>
+        <div class="fd fg1" style="margin-top:9px"><label>Notas internas</label><textarea id="f-notes" rows="2" placeholder="Anotações..."></textarea></div>
+      </div>
+    </div>
+    <div class="mft">
+      <div class="mft-l" id="modal-id-lbl"></div>
+      <div class="mft-a">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn pub" onclick="saveAndPub()">✅ Publicar</button>
+        <button class="btn p" onclick="saveProd()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="ov" id="conf-ov" onclick="closeConf(event)">
+  <div class="conf">
+    <div class="conf-i">🗑</div>
+    <div class="conf-t">Excluir produto?</div>
+    <div class="conf-d" id="conf-msg"></div>
+    <div class="conf-a"><button class="btn" onclick="closeConf()">Cancelar</button><button class="btn dng" onclick="execDel()">Excluir</button></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+let SB_URL = localStorage.getItem('orion_url') || '';
+let SB_KEY = localStorage.getItem('orion_key') || '';
+let PROJECTS = [];
+let CURRENT_PROJECT = null;
+let PRODUCTS = [];
+let KEYWORDS = [];
+let editId = null, delId = null;
+let fSrch='', fCl='', fSt='all', kwSrch='', kwSt='all';
+
+// ═══════════════════════════════════════════════
+// SUPABASE CLIENT
+// ═══════════════════════════════════════════════
+async function sb(path, opts={}) {
+  if (!SB_URL || !SB_KEY) throw new Error('Supabase não configurado');
+  const r = await fetch(SB_URL + '/rest/v1/' + path, {
+    headers: { apikey: SB_KEY, Authorization: 'Bearer ' + SB_KEY,
+               'Content-Type': 'application/json', Prefer: 'return=representation', ...opts.headers },
+    ...opts
+  });
+  if (!r.ok) throw new Error(await r.text());
+  const ct = r.headers.get('content-type') || '';
+  return ct.includes('json') ? r.json() : [];
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init() {
+  setConnBar('loading', '⌛ Conectando ao Supabase...');
+  if (!SB_URL || !SB_KEY) {
+    setConnBar('err', '⚠ Supabase não configurado — clique em ⚙ Config para conectar');
+    document.getElementById('cfg-panel').style.display = 'block';
+    document.getElementById('cfg-url').value = SB_URL;
+    document.getElementById('cfg-key').value = SB_KEY;
+    return;
+  }
+  try {
+    PROJECTS = await sb('projects?order=created_at');
+    if (!PROJECTS.length) throw new Error('Nenhum projeto encontrado');
+    populateProjectSelect();
+    const saved = localStorage.getItem('orion_project');
+    const proj = PROJECTS.find(p => p.id === saved) || PROJECTS[0];
+    await switchProject(proj.id);
+    setConnBar('ok', '✓ Conectado · ' + PROJECTS.length + ' projetos carregados');
+  } catch(e) {
+    setConnBar('err', '✗ ' + e.message);
+  }
+}
+
+function setConnBar(type, msg) {
+  const b = document.getElementById('conn-bar');
+  b.className = 'conn-bar ' + type;
+  b.textContent = msg;
+}
+
+// ═══════════════════════════════════════════════
+// PROJECTS
+// ═══════════════════════════════════════════════
+function populateProjectSelect() {
+  const sel = document.getElementById('proj-sel');
+  sel.innerHTML = PROJECTS.map(p =>
+    `<option value="${p.id}">${p.niche === 'Perfumes' ? '🌸' : '💊'} ${p.name}</option>`
+  ).join('');
+}
+
+async function switchProject(id) {
+  CURRENT_PROJECT = PROJECTS.find(p => p.id === id);
+  if (!CURRENT_PROJECT) return;
+  localStorage.setItem('orion_project', id);
+  document.getElementById('proj-sel').value = id;
+  document.getElementById('sb-domain').textContent = CURRENT_PROJECT.domain;
+
+  // Load data
+  const [prods, kws] = await Promise.all([
+    sb(`products?project_id=eq.${id}&order=cluster,sort_order`),
+    sb(`keywords?project_id=eq.${id}&order=monthly_volume.desc`)
+  ]);
+  PRODUCTS = prods;
+  KEYWORDS = kws;
+
+  // Populate cluster filter options
+  populateClusterFilter();
+  updateStats();
+  updateDashboard();
+  renderProds();
+  if (document.getElementById('page-keywords').classList.contains('on')) renderKw();
+  showToast('inf', '↕ ' + CURRENT_PROJECT.name + ' · ' + PRODUCTS.length + ' produtos');
+}
+
+function populateClusterFilter() {
+  const clusters = [...new Set(PRODUCTS.map(p => p.cluster).filter(Boolean))].sort();
+  const sel = document.getElementById('cl-filter');
+  sel.innerHTML = '<option value="">Todos clusters</option>' +
+    clusters.map(c => `<option value="${c}">${clusterLabel(c)}</option>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const TITLES = {dashboard:'Dashboard',produtos:'Produtos',keywords:'Keywords',publicados:'Publicados',rascunhos:'Rascunhos',afiliados:'Afiliados'};
+function goTo(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b => { if(b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('on'); });
+  document.getElementById('tb-title').textContent = TITLES[id] || id;
+  if(id==='produtos') renderProds();
+  if(id==='publicados') renderFiltered('published','g-pub');
+  if(id==='rascunhos') renderFiltered('draft','g-draft');
+  if(id==='keywords') renderKw();
+}
+
+// ═══════════════════════════════════════════════
+// STATS & DASHBOARD
+// ═══════════════════════════════════════════════
+function updateStats() {
+  const P = PRODUCTS;
+  const t=P.length, p=P.filter(x=>x.status==='published').length, d=P.filter(x=>x.status==='draft').length;
+  const l=P.filter(x=>x.amazon_url||x.shopee_url).length;
+  const az=P.filter(x=>x.amazon_url).length, sh=P.filter(x=>x.shopee_url).length, nl=P.filter(x=>!x.amazon_url&&!x.shopee_url).length;
+  set('st-t',t); set('st-p',p); set('st-d',d); set('st-l',l);
+  set('nb-t',t); set('nb-k',KEYWORDS.length); set('nb-p',p); set('nb-d',d);
+  set('ov-az',az+' links'); set('ov-sh',sh+' links'); set('ov-nl',nl+' prod.');
+  const clusters = [...new Set(PRODUCTS.map(p=>p.cluster).filter(Boolean))].sort();
+  const ov = document.getElementById('ov-clusters');
+  ov.innerHTML = clusters.map(c => {
+    const cnt = PRODUCTS.filter(p=>p.cluster===c).length;
+    return `<div class="ovi"><span class="ovi-n">${clusterLabel(c)}</span><span class="ovi-v" style="color:var(--bl)">${cnt}</span></div>`;
+  }).join('') || '<div style="font-size:12px;color:var(--tx3)">Nenhum produto</div>';
+}
+
+function updateDashboard() {
+  if (!CURRENT_PROJECT) return;
+  document.getElementById('dash-title').textContent = CURRENT_PROJECT.name;
+  document.getElementById('dash-sub').textContent = CURRENT_PROJECT.domain + ' · ' + PRODUCTS.length + ' produtos · ' + KEYWORDS.length + ' keywords';
+}
+
+function set(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+
+// ═══════════════════════════════════════════════
+// CLUSTERS
+// ═══════════════════════════════════════════════
+function clusterLabel(c) {
+  const m = {whey:'🥤 Whey',pre:'⚡ Pré-Treino',termo:'🔥 Termogênicos',vit:'💊 Vitaminas',cabelo:'💇 Cabelo/Pele',massa:'💪 Massa',hiper:'⚖️ Hipercalórico',micro:'🔬 Micro',masculino:'♂ Masculino',feminino:'♀ Feminino',unissex:'⚥ Unissex'};
+  return m[c] || c;
+}
+function clusterClass(c) {
+  const m = {whey:'cl-whey',pre:'cl-pre',termo:'cl-termo',vit:'cl-vit',cabelo:'cl-cabelo',massa:'cl-massa',masculino:'cl-masc',feminino:'cl-fem',unissex:'cl-uni'};
+  return m[c] || 'cl-other';
+}
+
+// ═══════════════════════════════════════════════
+// PRODUCT CARD
+// ═══════════════════════════════════════════════
+function buildCard(p) {
+  const stars = p.rating ? '★'.repeat(Math.round(p.rating))+'☆'.repeat(5-Math.round(p.rating)) : '';
+  const stMap = {published:['sb-pub','PUBLICADO'],draft:['sb-draft','RASCUNHO'],review:['sb-review','REVISÃO']};
+  const [scl,slbl] = stMap[p.status] || stMap.draft;
+  const azL = p.amazon_url
+    ? `<span class="lb lb-az" title="${p.amazon_url}" onclick="window.open('${p.amazon_url}','_blank')">🟠 Amazon ↗</span>`
+    : `<span class="lb lb-no">Amazon —</span>`;
+  const shL = p.shopee_url
+    ? `<span class="lb lb-sh" title="${p.shopee_url}" onclick="window.open('${p.shopee_url}','_blank')">🔴 Shopee ↗</span>`
+    : `<span class="lb lb-no">Shopee —</span>`;
+  const pubBtn = p.status==='published'
+    ? `<button class="pa unp" onclick="togglePub('${p.id}',event)">↓ Despublicar</button>`
+    : `<button class="pa pub" onclick="togglePub('${p.id}',event)">✅ Publicar</button>`;
+  const imgContent = p.image_url
+    ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`
+    : (p.emoji || '📦');
+  return `
+<div class="pc ${p.status==='published'?'pub':''}" id="card-${p.id}">
+  <div class="pc-img">${imgContent}</div>
+  <div class="pc-hd">
+    <div class="pc-info">
+      <div class="pc-name" title="${p.name}">${p.name}</div>
+      <div class="pc-brand">${p.brand||''} ${p.concentration?'· '+p.concentration:''}</div>
+      <span class="pc-cl ${clusterClass(p.cluster)}">${clusterLabel(p.cluster||'')}</span>
+    </div>
+    <span class="sbadge ${scl}">${slbl}</span>
+  </div>
+  <div class="pc-meta">
+    ${p.rating?`<span class="mp mp-s">${stars} ${p.rating}</span>`:''}
+    ${p.price_range?`<span class="mp mp-p">R$${p.price_range}</span>`:''}
+    ${p.review_count?`<span class="mp mp-k">${Number(p.review_count).toLocaleString('pt-BR')} aval.</span>`:''}
+  </div>
+  <div class="pc-aff">${azL}${shL}</div>
+  <div class="pc-act">
+    <button class="pa edit" onclick="openModal('edit','${p.id}')">✏ Editar</button>
+    ${pubBtn}
+    <button class="pa del" onclick="openConf('${p.id}')">🗑</button>
+  </div>
+</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function renderProds() {
+  const ps = PRODUCTS.filter(p => {
+    const ms = !fSrch || p.name?.toLowerCase().includes(fSrch.toLowerCase()) || p.brand?.toLowerCase().includes(fSrch.toLowerCase());
+    const mc = !fCl || p.cluster === fCl;
+    const mst = fSt==='all' || p.status===fSt;
+    return ms&&mc&&mst;
+  });
+  const g = document.getElementById('pgrid');
+  g.innerHTML = ps.length ? ps.map(buildCard).join('') :
+    `<div class="empty" style="grid-column:1/-1"><div class="empty-i">📦</div><div class="empty-t">${PRODUCTS.length===0?'Nenhum produto neste projeto':'Nenhum resultado'}</div></div>`;
+}
+
+function renderFiltered(st,gid) {
+  const ps = PRODUCTS.filter(p=>p.status===st);
+  const g = document.getElementById(gid);
+  g.innerHTML = ps.length ? ps.map(buildCard).join('') :
+    `<div class="empty" style="grid-column:1/-1"><div class="empty-i">📭</div><div class="empty-t">Nenhum produto aqui</div></div>`;
+}
+
+function filterP(v){fSrch=v;renderProds();}
+function filterCl(v){fCl=v;renderProds();}
+function filterSt(v,b){fSt=v;document.querySelectorAll('#page-produtos .ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderProds();}
+
+// ═══════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════
+function populateClusterModal() {
+  const clusters = [...new Set(PRODUCTS.map(p=>p.cluster).filter(Boolean))].sort();
+  const sel = document.getElementById('f-cluster');
+  const extra = ['whey','pre','termo','vit','cabelo','massa','hiper','micro','masculino','feminino','unissex'];
+  const all = [...new Set([...clusters,...extra])].sort();
+  sel.innerHTML = '<option value="">Selecionar...</option>' + all.map(c=>`<option value="${c}">${clusterLabel(c)}</option>`).join('');
+}
+
+function clearForm() {
+  ['f-name','f-brand','f-emoji','f-rating','f-rcount','f-price','f-protein','f-hl','f-az-url','f-az-btn','f-az-price','f-sh-url','f-sh-btn','f-sh-price','f-url','f-kw','f-notes','f-img'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('f-az-btn').value='Ver preço na Amazon';
+  document.getElementById('f-sh-btn').value='Ver opção mais barata na Shopee';
+  document.getElementById('f-cluster').value='';
+  document.getElementById('f-status').value='draft';
+  document.getElementById('f-conc').value='';
+  document.getElementById('img-prev').classList.remove('show');
+  document.getElementById('img-lbl').style.display='block';
+}
+
+function openModal(mode, id) {
+  editId = mode==='edit' ? id : null;
+  populateClusterModal();
+  clearForm();
+  if (mode==='edit' && id) {
+    const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+    document.getElementById('modal-t').textContent = 'Editar Produto';
+    document.getElementById('modal-id-lbl').textContent = 'ID: '+p.id;
+    const map = [['f-name',p.name],['f-brand',p.brand],['f-emoji',p.emoji],['f-rating',p.rating],['f-rcount',p.review_count],['f-price',p.price_range],['f-protein',p.protein_dose],['f-hl',p.highlight],['f-az-url',p.amazon_url],['f-az-btn',p.amazon_btn||'Ver preço na Amazon'],['f-az-price',p.amazon_price],['f-sh-url',p.shopee_url],['f-sh-btn',p.shopee_btn||'Ver opção mais barata na Shopee'],['f-sh-price',p.shopee_price],['f-url',p.review_url],['f-kw',p.keyword],['f-notes',p.notes],['f-img',p.image_url]];
+    map.forEach(([fid,val])=>{const el=document.getElementById(fid);if(el&&val!=null)el.value=val;});
+    document.getElementById('f-cluster').value=p.cluster||'';
+    document.getElementById('f-status').value=p.status||'draft';
+    document.getElementById('f-conc').value=p.concentration||'';
+    if(p.image_url){const pr=document.getElementById('img-prev');pr.src=p.image_url;pr.classList.add('show');document.getElementById('img-lbl').style.display='none';}
+  } else {
+    document.getElementById('modal-t').textContent='Novo Produto';
+    document.getElementById('modal-id-lbl').textContent='';
+  }
+  document.getElementById('modal-ov').classList.add('on');
+  setTimeout(()=>document.getElementById('f-name').focus(),100);
+}
+
+function closeModal(){document.getElementById('modal-ov').classList.remove('on');editId=null;}
+function closeModalOv(e){if(e.target===document.getElementById('modal-ov'))closeModal();}
+
+function getForm() {
+  const v = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  return {
+    name:v('f-name'), brand:v('f-brand'), emoji:v('f-emoji')||'📦', cluster:v('f-cluster'),
+    status:v('f-status'), rating:parseFloat(v('f-rating'))||null, review_count:parseInt(v('f-rcount'))||null,
+    price_range:v('f-price'), protein_dose:v('f-protein'), highlight:v('f-hl'), concentration:v('f-conc'),
+    amazon_url:v('f-az-url')||null, amazon_btn:v('f-az-btn'), amazon_price:v('f-az-price')||null,
+    shopee_url:v('f-sh-url')||null, shopee_btn:v('f-sh-btn'), shopee_price:v('f-sh-price')||null,
+    image_url:v('f-img')||null, review_url:v('f-url'), keyword:v('f-kw'), notes:v('f-notes'),
+    project_id: CURRENT_PROJECT?.id
+  };
+}
+
+async function saveProd(pub=false) {
+  const d = getForm();
+  if (!d.name) { showToast('er','⚠ Nome obrigatório'); return; }
+  if (!d.project_id) { showToast('er','⚠ Selecione um projeto'); return; }
+  if (pub) d.status='published';
+  try {
+    if (editId) {
+      const res = await sb(`products?id=eq.${editId}`, {method:'PATCH', body:JSON.stringify(d)});
+      const idx = PRODUCTS.findIndex(p=>p.id===editId);
+      if(idx>-1) PRODUCTS[idx] = {...PRODUCTS[idx], ...d, ...(res[0]||{})};
+      showToast('ok','✓ Produto atualizado');
+    } else {
+      const res = await sb('products', {method:'POST', body:JSON.stringify(d)});
+      PRODUCTS.push(res[0]||d);
+      showToast('ok','✓ Produto criado');
+    }
+    updateStats(); closeModal(); renderProds();
+  } catch(e) { showToast('er','Erro: '+e.message); }
+}
+function saveAndPub(){saveProd(true);}
+
+async function togglePub(id, e) {
+  if(e) e.stopPropagation();
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  const newSt = p.status==='published'?'draft':'published';
+  try {
+    await sb(`products?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({status:newSt})});
+    p.status = newSt;
+    updateStats(); renderProds();
+    showToast(newSt==='published'?'ok':'inf', newSt==='published'?'✅ Publicado':'↓ Despublicado');
+  } catch(e) { showToast('er','Erro: '+e.message); }
+}
+
+function openConf(id) {
+  delId=id;
+  const p=PRODUCTS.find(x=>x.id===id);
+  document.getElementById('conf-msg').textContent=`Excluir "${p?.name||'produto'}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('conf-ov').classList.add('on');
+}
+function closeConf(e){if(!e||e.target===document.getElementById('conf-ov')){document.getElementById('conf-ov').classList.remove('on');delId=null;}}
+async function execDel(){
+  if(!delId) return;
+  try {
+    await sb(`products?id=eq.${delId}`, {method:'DELETE'});
+    PRODUCTS = PRODUCTS.filter(p=>p.id!==delId);
+    updateStats(); closeConf(); renderProds();
+    showToast('er','🗑 Produto excluído');
+  } catch(e) { showToast('er','Erro: '+e.message); }
+}
+
+// ═══════════════════════════════════════════════
+// KEYWORDS
+// ═══════════════════════════════════════════════
+function renderKw() {
+  const maxV = Math.max(...KEYWORDS.map(k=>k.monthly_volume||0), 1);
+  let ks = KEYWORDS.filter(k => {
+    const ms = !kwSrch || k.keyword?.toLowerCase().includes(kwSrch.toLowerCase());
+    const mst = kwSt==='all' || k.status===kwSt;
+    return ms&&mst;
+  });
+  const stColor = {pendente:'var(--tx3)',em_producao:'var(--am)',publicado:'var(--gr)',indexado:'var(--bl)'};
+  const stLabel = {pendente:'pendente',em_producao:'em produção',publicado:'publicado',indexado:'indexado'};
+  const tb = document.getElementById('kw-tb');
+  tb.innerHTML = ks.map(k => {
+    const kdc = k.difficulty===null||k.difficulty===undefined?'kd-n':k.difficulty<=20?'kd-e':k.difficulty<=35?'kd-m':'kd-h';
+    const pct = Math.round((k.monthly_volume||0)/maxV*100);
+    const color = stColor[k.status]||'var(--tx3)';
+    return `<tr>
+      <td class="kwn">${k.keyword}</td>
+      <td><div class="vn">${(k.monthly_volume||0).toLocaleString('pt-BR')}</div><div class="vbw"><div class="vbf" style="width:${pct}%"></div></div></td>
+      <td><span class="kdc ${kdc}">${k.difficulty??'N/M'}</span></td>
+      <td><span style="font-family:'Fira Code',monospace;font-size:9px;color:var(--pu)">${k.content_type||'—'}</span></td>
+      <td><span style="font-size:10px;color:${color}">${stLabel[k.status]||k.status||'—'}</span></td>
+      <td><button class="ck-btn" onclick="createFromKw('${(k.keyword||'').replace(/'/g,"\\'")}','','')">+ Criar</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterKw(v){kwSrch=v;renderKw();}
+function filterKwSt(v,b){kwSt=v;b.closest('.fbar').querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderKw();}
+function createFromKw(kw,cl,url){openModal('new');setTimeout(()=>{document.getElementById('f-kw').value=kw;document.getElementById('f-name').focus();},150);}
+
+// ═══════════════════════════════════════════════
+// IMAGE
+// ═══════════════════════════════════════════════
+function handleImg(input){
+  const f=input.files[0];if(!f)return;
+  if(f.size>2*1024*1024){showToast('er','Imagem maior que 2MB');return;}
+  const r=new FileReader();
+  r.onload=e=>{const p=document.getElementById('img-prev');p.src=e.target.result;p.classList.add('show');document.getElementById('img-lbl').style.display='none';document.getElementById('f-img').value=e.target.result;};
+  r.readAsDataURL(f);
+}
+function prevImgUrl(url){if(!url)return;const p=document.getElementById('img-prev');p.src=url;p.classList.add('show');document.getElementById('img-lbl').style.display='none';}
+function dropImg(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('img-file').files=dt.files;handleImg({files:dt.files});}}
+
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+let cfgOpen=false;
+function toggleCfg(){
+  cfgOpen=!cfgOpen;
+  const p=document.getElementById('cfg-panel');
+  p.style.display=cfgOpen?'block':'none';
+  if(cfgOpen){document.getElementById('cfg-url').value=SB_URL;document.getElementById('cfg-key').value=SB_KEY;}
+}
+async function saveConfig(){
+  SB_URL=document.getElementById('cfg-url').value.trim();
+  SB_KEY=document.getElementById('cfg-key').value.trim();
+  localStorage.setItem('orion_url',SB_URL);
+  localStorage.setItem('orion_key',SB_KEY);
+  const st=document.getElementById('cfg-status');
+  st.style.color='var(--am)'; st.textContent='⌛ Testando...';
+  try{
+    await sb('projects?limit=1');
+    st.style.color='var(--gr)'; st.textContent='✓ Conectado!';
+    showToast('ok','✅ Supabase conectado!');
+    cfgOpen=false; document.getElementById('cfg-panel').style.display='none';
+    await init();
+  }catch(e){st.style.color='var(--rd)';st.textContent='✗ '+e.message;showToast('er','Erro: '+e.message);}
+}
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function showToast(type,msg){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),40);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2800);
+}
+
+// ═══════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeConf();}});
+init();
+</script>
+</body>
+</html>
