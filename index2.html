@@ -934,7 +934,7 @@ async function saveConfig() {
 async function saveWpConfig() {
   WP_URL = document.getElementById('cfg-wp-url').value.trim().replace(/\/$/, '');
   WP_USER = document.getElementById('cfg-wp-user').value.trim();
-  WP_PASS = document.getElementById('cfg-wp-pass').value.trim();
+  WP_PASS = document.getElementById('cfg-wp-pass').value.trim().replace(/\s+/g, '');
   localStorage.setItem('orion_wp_url', WP_URL);
   localStorage.setItem('orion_wp_user', WP_USER);
   localStorage.setItem('orion_wp_pass', WP_PASS);
