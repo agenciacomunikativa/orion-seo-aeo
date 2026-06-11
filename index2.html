@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ORION — CMS Multi-Projeto</title>
+<title>ORION v3 — CMS + WordPress</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
 :root{
@@ -17,7 +17,8 @@
   --pu:#b87fff;--pu-d:rgba(184,127,255,.08);--pu-b:rgba(184,127,255,.22);
   --sh:#f04f2d;--sh-d:rgba(240,79,45,.08);--sh-b:rgba(240,79,45,.22);
   --az:#ff9900;--az-d:rgba(255,153,0,.08);--az-b:rgba(255,153,0,.22);
-  --sw:252px;--r:8px;--rl:14px;
+  --wp:#21759b;--wp-d:rgba(33,117,155,.1);--wp-b:rgba(33,117,155,.3);
+  --sw:256px;--r:8px;--rl:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6;overflow-x:hidden}
@@ -25,9 +26,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 /* SIDEBAR */
 .sb{position:fixed;top:0;left:0;width:var(--sw);height:100vh;background:var(--bg2);border-right:1px solid var(--b1);z-index:300;display:flex;flex-direction:column}
 .sb-hd{padding:18px 16px 14px;border-bottom:1px solid var(--b1)}
-.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .sb-ico{width:32px;height:32px;background:var(--gr);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#050607;flex-shrink:0}
 .sb-name{font-weight:800;font-size:16px;letter-spacing:-.03em}
+.sb-ver{font-family:'Fira Code',monospace;font-size:8px;color:var(--gr);background:var(--gr-d);border:1px solid var(--gr-b);padding:1px 6px;border-radius:4px;margin-left:auto}
 .sb-proj-sel{width:100%;padding:7px 10px;background:var(--bg4);border:1px solid var(--b2);border-radius:8px;color:var(--tx);font-size:12px;font-family:'Outfit',sans-serif;outline:none;cursor:pointer;font-weight:600}
 .sb-proj-sel:focus{border-color:var(--gr)}
 .sb-nav{flex:1;overflow-y:auto;padding:6px 8px}
@@ -35,11 +37,14 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .nb{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;color:var(--tx2);transition:all .15s;width:100%;border:none;background:transparent;text-align:left}
 .nb:hover{background:var(--bg3);color:var(--tx)}
 .nb.on{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
-.nb .ni{font-size:13px;width:15px;text-align:center;flex-shrink:0}
+.nb.wp-on{background:var(--wp-d);color:#5ab4d8;border:1px solid var(--wp-b)}
+.nb .ni{font-size:13px;width:16px;text-align:center;flex-shrink:0}
 .nb .nc{font-family:'Fira Code',monospace;font-size:9px;font-weight:700;margin-left:auto;padding:1px 6px;border-radius:20px;background:var(--bg4);color:var(--tx3)}
 .nb.on .nc{background:var(--gr-d);color:var(--gr)}
+.wp-badge{font-family:'Fira Code',monospace;font-size:8px;padding:1px 5px;border-radius:3px;background:var(--wp-d);color:#5ab4d8;border:1px solid var(--wp-b);margin-left:auto}
 .sb-ft{padding:12px 14px;border-top:1px solid var(--b1)}
 .sb-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);display:inline-block;margin-right:6px;animation:pl 2s infinite}
+.wp-dot{background:#5ab4d8}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
 .sb-st{font-size:11px;color:var(--tx2);display:flex;align-items:center}
 .prog-bar{height:2px;background:var(--bg4);border-radius:1px;margin-top:8px;overflow:hidden}
@@ -56,21 +61,30 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .tbtn:hover{background:var(--bg3);color:var(--tx)}
 .tbtn.p{background:var(--gr);border-color:var(--gr);color:#050607}
 .tbtn.p:hover{background:var(--gr2)}
+.tbtn.wp{background:var(--wp-d);border-color:var(--wp-b);color:#5ab4d8}
+.tbtn.wp:hover{background:rgba(33,117,155,.2)}
 
 /* CONN STATUS */
 .conn-bar{padding:8px 28px;font-family:'Fira Code',monospace;font-size:10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--b1)}
 .conn-bar.ok{background:var(--gr-d);color:var(--gr)}
 .conn-bar.err{background:var(--rd-d);color:var(--rd)}
 .conn-bar.loading{background:var(--am-d);color:var(--am)}
+.conn-bar.wp{background:var(--wp-d);color:#5ab4d8}
 
 /* CONFIG PANEL */
-.cfg-panel{display:none;padding:14px 28px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cfg-panel{display:none;padding:16px 28px;background:var(--bg3);border-bottom:1px solid var(--b1)}
+.cfg-tabs{display:flex;gap:6px;margin-bottom:14px}
+.cfg-tab{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);transition:all .15s;font-family:'Outfit',sans-serif}
+.cfg-tab.on{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
+.cfg-tab-wp.on{background:var(--wp-d);color:#5ab4d8;border-color:var(--wp-b)}
 .cfg-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
 .cfg-field{display:flex;flex-direction:column;gap:4px;flex:1;min-width:180px}
 .cfg-field label{font-size:10px;font-weight:700;color:var(--tx3);font-family:'Fira Code',monospace;letter-spacing:.05em;text-transform:uppercase}
 .cfg-field input{padding:8px 11px;background:var(--bg2);border:1px solid var(--b1);border-radius:8px;color:var(--tx);font-size:11px;font-family:'Fira Code',monospace;outline:none;transition:border-color .15s}
 .cfg-field input:focus{border-color:var(--gr)}
-.cfg-status{font-family:'Fira Code',monospace;font-size:10px;margin-top:6px}
+.cfg-status{font-family:'Fira Code',monospace;font-size:10px;margin-top:8px}
+.cfg-hint{font-size:10px;color:var(--tx3);margin-top:8px;line-height:1.6}
+.cfg-hint code{background:var(--bg4);padding:1px 5px;border-radius:3px;font-family:'Fira Code',monospace;font-size:9px;color:var(--am)}
 
 /* PAGES */
 .page{display:none;padding:26px 28px;animation:fu .22s ease}
@@ -85,8 +99,15 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:20px}
 .sc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);padding:14px 16px}
 .sv{font-weight:900;font-size:24px;letter-spacing:-.04em;line-height:1}
-.sv.g{color:var(--gr)}.sv.a{color:var(--am)}.sv.b{color:var(--bl)}.sv.p{color:var(--pu)}
+.sv.g{color:var(--gr)}.sv.a{color:var(--am)}.sv.b{color:var(--bl)}.sv.p{color:var(--pu)}.sv.wp{color:#5ab4d8}
 .sl{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);margin-top:4px;letter-spacing:.05em;text-transform:uppercase}
+
+/* WP STATUS BADGE */
+.wp-st{display:inline-flex;align-items:center;gap:4px;font-family:'Fira Code',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px}
+.wp-st.sync{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.wp-st.nosync{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
+.wp-st.syncing{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
+.wp-st.error{background:var(--rd-d);color:var(--rd);border:1px solid var(--rd-b)}
 
 /* FILTERS */
 .fbar{display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap}
@@ -99,12 +120,14 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .ftab.on{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
 
 /* PRODUCT GRID */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(296px,1fr));gap:10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .pc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;transition:all .18s}
 .pc:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
 .pc.pub{border-color:var(--gr-b)}
-.pc-img{width:100%;height:106px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;position:relative}
+.pc.wp-sync{border-color:var(--wp-b)}
+.pc-img{width:100%;height:110px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;position:relative}
 .pc-img img{width:100%;height:100%;object-fit:cover}
+.pc-img-overlay{position:absolute;top:6px;right:6px}
 .pc-hd{padding:12px 14px 8px;display:flex;align-items:flex-start;gap:10px}
 .pc-info{flex:1;min-width:0}
 .pc-name{font-weight:800;font-size:13px;line-height:1.3;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -116,7 +139,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .cl-vit,.cl-cabelo{background:var(--pu-d);color:var(--pu);border:1px solid var(--pu-b)}
 .cl-massa{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
 .cl-other{background:var(--bg4);color:var(--tx2);border:1px solid var(--b1)}
-/* Perfumes clusters */
 .cl-masc,.cl-masculino{background:var(--bl-d);color:var(--bl);border:1px solid var(--bl-b)}
 .cl-fem,.cl-feminino{background:var(--pu-d);color:var(--pu);border:1px solid var(--pu-b)}
 .cl-uni,.cl-unissex{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
@@ -129,24 +151,27 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .mp-s{background:var(--am-d);color:var(--am);border:1px solid var(--am-b)}
 .mp-p{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
 .mp-k{background:var(--bl-d);color:var(--bl);border:1px solid var(--bl-b)}
+.mp-wp{background:var(--wp-d);color:#5ab4d8;border:1px solid var(--wp-b)}
 .pc-aff{padding:0 14px 8px;display:flex;gap:5px}
 .lb{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;display:flex;align-items:center;gap:3px;cursor:pointer;transition:opacity .15s}
 .lb:hover{opacity:.8}
 .lb-az{background:var(--az-d);color:var(--az);border:1px solid var(--az-b)}
 .lb-sh{background:var(--sh-d);color:var(--sh);border:1px solid var(--sh-b)}
+.lb-wp{background:var(--wp-d);color:#5ab4d8;border:1px solid var(--wp-b)}
 .lb-no{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
-.pc-act{padding:9px 14px;border-top:1px solid var(--b1);display:flex;gap:5px;background:var(--bg3)}
-.pa{flex:1;padding:6px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;text-align:center}
+.pc-act{padding:9px 14px;border-top:1px solid var(--b1);display:flex;gap:5px;background:var(--bg3);flex-wrap:wrap}
+.pa{flex:1;padding:6px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;text-align:center;min-width:60px}
 .pa:hover{background:var(--bg4);color:var(--tx)}
 .pa.edit{border-color:var(--bl-b);color:var(--bl)}.pa.edit:hover{background:var(--bl-d)}
 .pa.pub{border-color:var(--gr-b);color:var(--gr)}.pa.pub:hover{background:var(--gr-d)}
 .pa.del{border-color:var(--rd-b);color:var(--rd)}.pa.del:hover{background:var(--rd-d)}
 .pa.unp{border-color:var(--am-b);color:var(--am)}.pa.unp:hover{background:var(--am-d)}
+.pa.wp{border-color:var(--wp-b);color:#5ab4d8}.pa.wp:hover{background:var(--wp-d)}
 
 /* MODAL */
 .ov{position:fixed;inset:0;background:rgba(5,6,7,.9);backdrop-filter:blur(10px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s}
 .ov.on{opacity:1;pointer-events:all}
-.mdl{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:700px;max-height:92vh;overflow-y:auto;transform:scale(.97);transition:transform .22s}
+.mdl{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rl);width:100%;max-width:740px;max-height:92vh;overflow-y:auto;transform:scale(.97);transition:transform .22s}
 .ov.on .mdl{transform:scale(1)}
 .mhd{padding:18px 22px 14px;border-bottom:1px solid var(--b1);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--bg2);z-index:10}
 .mt{font-weight:900;font-size:17px;letter-spacing:-.03em}
@@ -167,7 +192,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .aw{position:relative}
 .ai{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:12px;z-index:1}
 .aff-section{background:var(--bg3);border:1px solid var(--b1);border-radius:10px;padding:14px;margin-top:4px}
-.aff-plat{font-size:12px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .img-drop{border:2px dashed var(--b2);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);margin-bottom:8px}
 .img-drop:hover{border-color:var(--gr-b);background:var(--gr-d)}
 .img-prev{width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px;display:none}
@@ -181,6 +205,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .btn.p:hover{background:var(--gr2)}
 .btn.pub{background:var(--gr-d);border-color:var(--gr-b);color:var(--gr)}
 .btn.dng{background:var(--rd-d);border-color:var(--rd-b);color:var(--rd)}
+.btn.wp{background:var(--wp-d);border-color:var(--wp-b);color:#5ab4d8}
+.btn.wp:hover{background:rgba(33,117,155,.2)}
 
 /* CONFIRM */
 .conf{background:var(--bg2);border:1px solid var(--rd-b);border-radius:var(--rl);width:100%;max-width:380px;padding:22px;text-align:center}
@@ -197,7 +223,6 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .kt tr:last-child td{border-bottom:none}
 .kt tr:hover td{background:var(--bg3)}
 .kwn{font-family:'Fira Code',monospace;font-size:11px;color:var(--tx);font-weight:500}
-.kwu{font-family:'Fira Code',monospace;font-size:10px;color:var(--bl)}
 .vn{font-weight:900;font-size:13px;color:var(--am)}
 .vbw{width:70px;height:3px;background:var(--bg5);border-radius:2px;margin-top:3px;overflow:hidden}
 .vbf{height:100%;background:var(--am);border-radius:2px}
@@ -208,6 +233,39 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .kd-n{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
 .ck-btn{font-size:9px;font-weight:700;padding:3px 9px;border-radius:5px;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap}
 .ck-btn:hover{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
+
+/* WP PAGE BUILDER */
+.wp-builder{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden}
+.wp-header{padding:14px 18px;background:var(--bg3);border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.wp-ht{font-weight:800;font-size:13px;display:flex;align-items:center;gap:8px}
+.wp-dot-icon{width:8px;height:8px;border-radius:50%;background:#5ab4d8;flex-shrink:0}
+.wp-list{padding:8px}
+.wp-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;transition:background .15s;border:1px solid transparent}
+.wp-row:hover{background:var(--bg3);border-color:var(--b1)}
+.wp-row-info{flex:1;min-width:0}
+.wp-row-title{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wp-row-meta{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);margin-top:1px}
+.wp-row-acts{display:flex;gap:5px;flex-shrink:0}
+.wp-act{font-size:10px;font-weight:700;padding:4px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--b1);background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;white-space:nowrap}
+.wp-act:hover{background:var(--bg4);color:var(--tx)}
+.wp-act.view{border-color:var(--bl-b);color:var(--bl)}.wp-act.view:hover{background:var(--bl-d)}
+.wp-act.sync{border-color:var(--gr-b);color:var(--gr)}.wp-act.sync:hover{background:var(--gr-d)}
+.wp-act.create{border-color:var(--wp-b);color:#5ab4d8}.wp-act.create:hover{background:var(--wp-d)}
+.wp-act.del{border-color:var(--rd-b);color:var(--rd)}.wp-act.del:hover{background:var(--rd-d)}
+.wp-status{font-family:'Fira Code',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px}
+.wp-s-publish{background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)}
+.wp-s-draft{background:var(--bg4);color:var(--tx3);border:1px solid var(--b1)}
+
+/* PAGE MODAL */
+.pmdl{max-width:860px}
+.tabs{display:flex;gap:5px;margin-bottom:16px;border-bottom:1px solid var(--b1);padding-bottom:12px}
+.tab{padding:6px 14px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s}
+.tab.on{background:var(--gr-d);color:var(--gr);border-color:var(--gr-b)}
+.tab-content{display:none}
+.tab-content.on{display:block}
+.html-preview{background:var(--bg3);border:1px solid var(--b1);border-radius:8px;padding:14px;font-family:'Fira Code',monospace;font-size:11px;color:var(--am);line-height:1.7;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+.code-area{width:100%;min-height:200px;padding:12px;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;color:var(--am);font-family:'Fira Code',monospace;font-size:11px;line-height:1.7;outline:none;resize:vertical}
+.code-area:focus{border-color:var(--am)}
 
 /* OVERVIEW */
 .ovg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
@@ -225,6 +283,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 .toast.ok{border-color:var(--gr-b);background:var(--gr-d);color:var(--gr)}
 .toast.er{border-color:var(--rd-b);background:var(--rd-d);color:var(--rd)}
 .toast.inf{border-color:var(--bl-b);background:var(--bl-d);color:var(--bl)}
+.toast.wp{border-color:var(--wp-b);background:var(--wp-d);color:#5ab4d8}
 
 /* LOADING */
 .loading{text-align:center;padding:48px;color:var(--tx3)}
@@ -236,6 +295,9 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 
 .div{height:1px;background:var(--b1);margin:18px 0}
 .sl2{font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase;margin:14px 0 8px}
+.info-box{background:var(--wp-d);border:1px solid var(--wp-b);border-radius:8px;padding:12px 14px;font-size:12px;color:#5ab4d8;line-height:1.7;margin-bottom:16px}
+.info-box strong{font-weight:700}
+.info-box code{background:rgba(255,255,255,.08);padding:1px 5px;border-radius:3px;font-family:'Fira Code',monospace;font-size:10px}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
 </style>
 </head>
@@ -247,6 +309,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
     <div class="sb-logo">
       <div class="sb-ico">O</div>
       <div class="sb-name">ORION</div>
+      <span class="sb-ver">v3.0</span>
     </div>
     <select class="sb-proj-sel" id="proj-sel" onchange="switchProject(this.value)">
       <option value="">⌛ Carregando projetos...</option>
@@ -257,6 +320,9 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
     <button class="nb on" onclick="goTo('dashboard')"><span class="ni">⬡</span>Dashboard</button>
     <button class="nb" onclick="goTo('produtos')"><span class="ni">📦</span>Produtos<span class="nc" id="nb-t">0</span></button>
     <button class="nb" onclick="goTo('keywords')"><span class="ni">🔑</span>Keywords<span class="nc" id="nb-k">0</span></button>
+    <div class="sb-sec">WordPress</div>
+    <button class="nb" onclick="goTo('wp-paginas')"><span class="ni">📄</span>Páginas<span class="wp-badge" id="nb-wp-p">WP</span></button>
+    <button class="nb" onclick="goTo('wp-sync')"><span class="ni">⚡</span>Sincronizar</button>
     <div class="sb-sec">Conteúdo</div>
     <button class="nb" onclick="goTo('publicados')"><span class="ni">✅</span>Publicados<span class="nc" id="nb-p">0</span></button>
     <button class="nb" onclick="goTo('rascunhos')"><span class="ni">📝</span>Rascunhos<span class="nc" id="nb-d">0</span></button>
@@ -264,8 +330,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
     <button class="nb" onclick="goTo('afiliados')"><span class="ni">💰</span>Afiliados</button>
   </div>
   <div class="sb-ft">
-    <div class="sb-st"><span class="sb-dot"></span><span id="sb-domain">Conectando...</span></div>
-    <div style="font-size:9px;color:var(--tx3);margin-top:2px;font-family:'Fira Code',monospace">Supabase · Cloudflare · GitHub</div>
+    <div class="sb-st"><span class="sb-dot" id="conn-dot"></span><span id="sb-domain">Conectando...</span></div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:2px;font-family:'Fira Code',monospace" id="wp-conn-status">Supabase · WordPress · Cloudflare</div>
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
 </div>
@@ -275,9 +341,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
   <div class="topbar">
     <div class="tb-l">
       <span class="tb-t" id="tb-title">Dashboard</span>
-      <span class="tb-badge" id="tb-badge" style="background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)">v2.0</span>
+      <span class="tb-badge" id="tb-badge" style="background:var(--gr-d);color:var(--gr);border:1px solid var(--gr-b)">v3.0</span>
     </div>
     <div class="tb-r">
+      <button class="tbtn wp" onclick="goTo('wp-sync')">⚡ Sync WP</button>
       <button class="tbtn" onclick="toggleCfg()">⚙ Config</button>
       <button class="tbtn p" onclick="openModal('new')">+ Novo Produto</button>
     </div>
@@ -285,18 +352,50 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 
   <!-- CONFIG PANEL -->
   <div class="cfg-panel" id="cfg-panel">
-    <div class="cfg-row">
-      <div class="cfg-field" style="flex:2">
-        <label>Supabase URL</label>
-        <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
-      </div>
-      <div class="cfg-field" style="flex:3">
-        <label>Anon Key</label>
-        <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
-      </div>
-      <button class="btn p" onclick="saveConfig()">Conectar</button>
+    <div class="cfg-tabs">
+      <button class="cfg-tab on" onclick="switchCfgTab('sb',this)">Supabase</button>
+      <button class="cfg-tab cfg-tab-wp" onclick="switchCfgTab('wp',this)">WordPress REST API</button>
     </div>
-    <div id="cfg-status" class="cfg-status"></div>
+    <!-- Supabase config -->
+    <div id="cfg-sb-panel">
+      <div class="cfg-row">
+        <div class="cfg-field" style="flex:2">
+          <label>Supabase URL</label>
+          <input type="text" id="cfg-url" placeholder="https://xxxxx.supabase.co">
+        </div>
+        <div class="cfg-field" style="flex:3">
+          <label>Anon Key</label>
+          <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+        <button class="btn p" onclick="saveConfig()">Conectar</button>
+      </div>
+      <div id="cfg-status" class="cfg-status"></div>
+    </div>
+    <!-- WordPress config -->
+    <div id="cfg-wp-panel" style="display:none">
+      <div class="info-box">
+        <strong>Como configurar:</strong> No WordPress, instale o plugin <code>Application Passwords</code> (nativo desde WP 5.6). Acesse <code>Usuários → Perfil → Application Passwords</code>, crie uma senha e copie aqui. A URL da API é <code>https://seudominio.com.br/wp-json/wp/v2</code>
+      </div>
+      <div class="cfg-row">
+        <div class="cfg-field" style="flex:2">
+          <label>WordPress URL (sem barra final)</label>
+          <input type="text" id="cfg-wp-url" placeholder="https://potencialsuplementos.com.br">
+        </div>
+        <div class="cfg-field">
+          <label>Usuário WP</label>
+          <input type="text" id="cfg-wp-user" placeholder="admin">
+        </div>
+        <div class="cfg-field" style="flex:2">
+          <label>Application Password</label>
+          <input type="password" id="cfg-wp-pass" placeholder="xxxx xxxx xxxx xxxx xxxx xxxx">
+        </div>
+        <button class="btn wp" onclick="saveWpConfig()">Conectar WP</button>
+      </div>
+      <div id="cfg-wp-status" class="cfg-status"></div>
+      <div class="cfg-hint">
+        O ORION se comunica com o WordPress via REST API nativa. Não é necessário nenhum plugin adicional além do Application Passwords. Todas as operações (criar/editar páginas, upload de mídia, atualizar produtos) são feitas via HTTPS.
+      </div>
+    </div>
   </div>
 
   <!-- CONN BAR -->
@@ -305,11 +404,11 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
   <!-- DASHBOARD -->
   <div class="page on" id="page-dashboard">
     <div class="ph">
-      <div class="ph-eye">ORION · Multi-Projeto</div>
+      <div class="ph-eye">ORION v3 · Multi-Projeto + WordPress</div>
       <div class="ph-t" id="dash-title">Carregando...</div>
       <div class="ph-s" id="dash-sub">Aguarde...</div>
     </div>
-    <div class="stats">
+    <div class="stats" id="dash-stats">
       <div class="sc"><div class="sv g" id="st-t">–</div><div class="sl">Produtos</div></div>
       <div class="sc"><div class="sv a" id="st-p">–</div><div class="sl">Publicados</div></div>
       <div class="sc"><div class="sv b" id="st-d">–</div><div class="sl">Rascunhos</div></div>
@@ -320,9 +419,10 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
         <div class="ovt">Produtos por cluster</div>
         <div class="ovl" id="ov-clusters"><div style="font-size:12px;color:var(--tx3)">Carregando...</div></div>
       </div>
-      <div class="ovc">
-        <div class="ovt">Links afiliados</div>
-        <div class="ovl">
+      <div class="ovc" id="ov-wp-card" style="border-color:var(--wp-b)">
+        <div class="ovt" style="color:#5ab4d8">WordPress</div>
+        <div class="ovl" id="ov-wp">
+          <div class="ovi"><span class="ovi-n">Status</span><span class="ovi-v" style="color:var(--tx3)" id="ov-wp-st">Não conectado</span></div>
           <div class="ovi"><span class="ovi-n">🟠 Amazon</span><span class="ovi-v" style="color:var(--az)" id="ov-az">–</span></div>
           <div class="ovi"><span class="ovi-n">🔴 Shopee</span><span class="ovi-v" style="color:var(--sh)" id="ov-sh">–</span></div>
           <div class="ovi"><span class="ovi-n">Sem links</span><span class="ovi-v" style="color:var(--tx3)" id="ov-nl">–</span></div>
@@ -332,6 +432,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
     <div class="sl2">Acesso rápido</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn p" onclick="openModal('new')">+ Novo produto</button>
+      <button class="btn wp" onclick="goTo('wp-paginas')">📄 Páginas WP</button>
+      <button class="btn wp" onclick="goTo('wp-sync')">⚡ Sincronizar WP</button>
       <button class="btn" onclick="goTo('keywords')">🔑 Keywords</button>
       <button class="btn" onclick="goTo('afiliados')">💰 Afiliados</button>
     </div>
@@ -351,6 +453,97 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
       <button class="ftab" onclick="filterSt('review',this)">👁 Revisão</button>
     </div>
     <div class="pgrid" id="pgrid"></div>
+  </div>
+
+  <!-- WP PAGINAS -->
+  <div class="page" id="page-wp-paginas">
+    <div class="ph">
+      <div class="ph-eye">WordPress · REST API</div>
+      <div class="ph-t">Páginas</div>
+      <div class="ph-s">Crie, edite e publique páginas diretamente no WordPress a partir do ORION.</div>
+    </div>
+    <div id="wp-not-configured" style="display:none">
+      <div class="info-box">⚠ WordPress não configurado. Clique em <strong>⚙ Config → WordPress REST API</strong> para conectar.</div>
+    </div>
+    <div id="wp-pages-content">
+      <div class="fbar">
+        <input class="fi" type="text" placeholder="🔍 Buscar página..." oninput="filterWpPages(this.value)" id="wp-srch">
+        <select class="fsel" onchange="filterWpPagesSt(this.value)" id="wp-st-filter">
+          <option value="">Todos status</option>
+          <option value="publish">Publicados</option>
+          <option value="draft">Rascunhos</option>
+        </select>
+        <button class="tbtn wp" onclick="loadWpPages()">↺ Recarregar</button>
+        <button class="tbtn p" onclick="openPageModal('new')">+ Nova Página</button>
+      </div>
+      <div class="wp-builder">
+        <div class="wp-header">
+          <div class="wp-ht"><div class="wp-dot-icon"></div><span id="wp-pages-count">Carregando páginas...</span></div>
+          <span style="font-size:10px;color:var(--tx3);font-family:'Fira Code',monospace" id="wp-site-url"></span>
+        </div>
+        <div class="wp-list" id="wp-pages-list">
+          <div class="loading"><div class="spinner"></div>Carregando páginas do WordPress...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WP SYNC -->
+  <div class="page" id="page-wp-sync">
+    <div class="ph">
+      <div class="ph-eye">WordPress · Sincronização</div>
+      <div class="ph-t">Sincronizar Produtos</div>
+      <div class="ph-s">Envie produtos do ORION para o WordPress — cria posts/páginas com links afiliados prontos.</div>
+    </div>
+    <div id="sync-wp-not-configured" style="display:none">
+      <div class="info-box">⚠ WordPress não configurado. Clique em <strong>⚙ Config → WordPress REST API</strong> para conectar.</div>
+    </div>
+    <div id="sync-content">
+      <div class="ovg" style="margin-bottom:16px">
+        <div class="ovc" style="border-color:var(--wp-b)">
+          <div class="ovt" style="color:#5ab4d8">Status da conexão WP</div>
+          <div class="ovl">
+            <div class="ovi"><span class="ovi-n">Site</span><span class="ovi-v" id="sync-site" style="color:var(--tx3)">—</span></div>
+            <div class="ovi"><span class="ovi-n">Usuário</span><span class="ovi-v" id="sync-user" style="color:var(--tx3)">—</span></div>
+            <div class="ovi"><span class="ovi-n">API</span><span class="ovi-v" id="sync-api-st" style="color:var(--tx3)">Não testado</span></div>
+          </div>
+        </div>
+        <div class="ovc">
+          <div class="ovt">Produtos para sincronizar</div>
+          <div class="ovl">
+            <div class="ovi"><span class="ovi-n">Publicados</span><span class="ovi-v" style="color:var(--gr)" id="sync-pub-count">—</span></div>
+            <div class="ovi"><span class="ovi-n">Com Amazon</span><span class="ovi-v" style="color:var(--az)" id="sync-az-count">—</span></div>
+            <div class="ovi"><span class="ovi-n">Com Shopee</span><span class="ovi-v" style="color:var(--sh)" id="sync-sh-count">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);padding:18px;margin-bottom:16px">
+        <div class="sl2" style="margin-top:0">Tipo de sincronização</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;cursor:pointer;padding:8px 12px;border:1px solid var(--b1);border-radius:8px;background:var(--bg3)">
+            <input type="radio" name="sync-type" value="page" checked> Criar como Páginas
+          </label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;cursor:pointer;padding:8px 12px;border:1px solid var(--b1);border-radius:8px;background:var(--bg3)">
+            <input type="radio" name="sync-type" value="post"> Criar como Posts
+          </label>
+        </div>
+        <div class="sl2">Selecionar produtos</div>
+        <div style="display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap">
+          <button class="btn" onclick="selectAllSync()">Selecionar todos</button>
+          <button class="btn" onclick="clearSync()">Limpar seleção</button>
+          <button class="btn" onclick="selectPublishedSync()">Só publicados</button>
+        </div>
+        <div id="sync-prod-list" style="display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn wp" onclick="testWpConnection()">Testar conexão WP</button>
+        <button class="btn p" onclick="syncSelectedToWp()">⚡ Sincronizar selecionados</button>
+        <div id="sync-progress" style="display:none;font-family:'Fira Code',monospace;font-size:11px;color:var(--am)"></div>
+      </div>
+      <div id="sync-log" style="margin-top:14px;display:none;background:var(--bg3);border:1px solid var(--b1);border-radius:8px;padding:14px;font-family:'Fira Code',monospace;font-size:11px;line-height:1.9;max-height:250px;overflow-y:auto"></div>
+    </div>
   </div>
 
   <!-- PUBLICADOS -->
@@ -413,8 +606,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
       <!-- Imagem -->
       <div class="fs">
         <div class="fst">📷 Imagem</div>
-        <div class="img-drop" onclick="document.getElementById('img-file').click()" ondragover="ev.preventDefault()" ondrop="dropImg(event)">
-          <div id="img-lbl"><div style="font-size:22px;margin-bottom:4px">🖼</div><div style="font-size:12px;color:var(--tx2);font-weight:600">Clique ou arraste a imagem</div><div style="font-size:10px;color:var(--tx3)">JPG, PNG, WEBP · Máx 2MB</div></div>
+        <div class="img-drop" onclick="document.getElementById('img-file').click()" ondragover="event.preventDefault()" ondrop="dropImg(event)">
+          <div id="img-lbl"><div style="font-size:22px;margin-bottom:4px">🖼</div><div style="font-size:12px;color:var(--tx2);font-weight:600">Clique ou arraste a imagem</div><div style="font-size:10px;color:var(--tx3)">JPG, PNG, WEBP · Máx 2MB · Será enviada ao WP Media</div></div>
           <img id="img-prev" class="img-prev" src="" alt="">
         </div>
         <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(this)">
@@ -423,11 +616,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
       <!-- Básico -->
       <div class="fs">
         <div class="fst">Informações básicas</div>
-        <div class="fg"><div class="fd" style="grid-column:1/-1"><label>Nome *</label><input type="text" id="f-name" placeholder="Ex: Growth Whey Concentrado 900g"></div>
-        <div class="fd"><label>Marca *</label><input type="text" id="f-brand" placeholder="Ex: Growth Supplements"></div>
-        <div class="fd"><label>Cluster *</label><select id="f-cluster"><option value="">Selecionar...</option></select></div>
-        <div class="fd"><label>Emoji</label><input type="text" id="f-emoji" placeholder="📦" maxlength="4"></div>
-        <div class="fd"><label>Status</label><select id="f-status"><option value="draft">📝 Rascunho</option><option value="review">👁 Em Revisão</option><option value="published">✅ Publicado</option></select></div></div>
+        <div class="fg">
+          <div class="fd" style="grid-column:1/-1"><label>Nome *</label><input type="text" id="f-name" placeholder="Ex: Growth Whey Concentrado 900g"></div>
+          <div class="fd"><label>Marca *</label><input type="text" id="f-brand" placeholder="Ex: Growth Supplements"></div>
+          <div class="fd"><label>Cluster *</label><select id="f-cluster"><option value="">Selecionar...</option></select></div>
+          <div class="fd"><label>Emoji</label><input type="text" id="f-emoji" placeholder="📦" maxlength="4"></div>
+          <div class="fd"><label>Status</label><select id="f-status"><option value="draft">📝 Rascunho</option><option value="review">👁 Em Revisão</option><option value="published">✅ Publicado</option></select></div>
+        </div>
       </div>
       <!-- Dados -->
       <div class="fs">
@@ -469,7 +664,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
       <div class="fs">
         <div class="fst">SEO</div>
         <div class="fg">
-          <div class="fd"><label>URL do review</label><input type="text" id="f-url" placeholder="/review/growth-whey-concentrado"></div>
+          <div class="fd"><label>URL do review (slug)</label><input type="text" id="f-url" placeholder="/review/growth-whey-concentrado"></div>
           <div class="fd"><label>Keyword principal</label><input type="text" id="f-kw" placeholder="melhor whey protein"></div>
         </div>
         <div class="fd fg1" style="margin-top:9px"><label>Notas internas</label><textarea id="f-notes" rows="2" placeholder="Anotações..."></textarea></div>
@@ -479,8 +674,78 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
       <div class="mft-l" id="modal-id-lbl"></div>
       <div class="mft-a">
         <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn wp" onclick="saveAndSyncWp()">⚡ Salvar + Enviar WP</button>
         <button class="btn pub" onclick="saveAndPub()">✅ Publicar</button>
         <button class="btn p" onclick="saveProd()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PAGINA WP -->
+<div class="ov" id="page-modal-ov" onclick="closePageModalOv(event)">
+  <div class="mdl pmdl">
+    <div class="mhd">
+      <div class="mt" id="page-modal-t">Nova Página</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span id="page-wp-id-badge" style="display:none;font-family:'Fira Code',monospace;font-size:9px;background:var(--wp-d);color:#5ab4d8;border:1px solid var(--wp-b);padding:2px 8px;border-radius:4px"></span>
+        <button class="mcl" onclick="closePageModal()">✕</button>
+      </div>
+    </div>
+    <div class="mbd">
+      <div class="tabs">
+        <button class="tab on" onclick="switchPageTab('basic',this)">Básico</button>
+        <button class="tab" onclick="switchPageTab('content',this)">Conteúdo HTML</button>
+        <button class="tab" onclick="switchPageTab('seo',this)">SEO</button>
+        <button class="tab" onclick="switchPageTab('products',this)">Produtos Vinculados</button>
+      </div>
+      <!-- BASIC TAB -->
+      <div id="ptab-basic" class="tab-content on">
+        <div class="fg" style="margin-bottom:12px">
+          <div class="fd" style="grid-column:1/-1"><label>Título da Página *</label><input type="text" id="pf-title" placeholder="Ex: Melhores Whey Proteins do Brasil"></div>
+          <div class="fd"><label>Slug (URL)</label><input type="text" id="pf-slug" placeholder="melhores-whey-proteins"><span class="fhint">Deixe vazio para gerar automaticamente do título</span></div>
+          <div class="fd"><label>Status</label><select id="pf-status"><option value="draft">📝 Rascunho</option><option value="publish">✅ Publicar</option></select></div>
+          <div class="fd"><label>Tipo de página</label><select id="pf-type"><option value="page">Página</option><option value="post">Post</option></select></div>
+          <div class="fd"><label>Página pai (ID WP)</label><input type="number" id="pf-parent" placeholder="0 = raiz"><span class="fhint">ID numérico da página pai no WP</span></div>
+          <div class="fd"><label>Ordem</label><input type="number" id="pf-order" placeholder="0"></div>
+        </div>
+        <div class="fd" style="margin-bottom:9px"><label>Excerto / Meta descrição curta</label><textarea id="pf-excerpt" rows="2" placeholder="Resumo para listagens e meta description..."></textarea></div>
+      </div>
+      <!-- CONTENT TAB -->
+      <div id="ptab-content" class="tab-content">
+        <div style="margin-bottom:9px;display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn" onclick="generateProductTable()">⚡ Gerar tabela de produtos</button>
+          <button class="btn" onclick="generateReviewTemplate()">📝 Template review</button>
+          <button class="btn" onclick="generateClusterTemplate()">📋 Template cluster</button>
+          <button class="btn" onclick="insertFAQBlock()">❓ Bloco FAQ</button>
+        </div>
+        <textarea class="code-area" id="pf-content" placeholder="Cole ou escreva o conteúdo HTML da página aqui...&#10;&#10;Use os botões acima para gerar templates automaticamente com os produtos vinculados."></textarea>
+        <div style="margin-top:8px;font-family:'Fira Code',monospace;font-size:9px;color:var(--tx3)">O conteúdo será enviado como HTML ao WordPress. Blocos Gutenberg são suportados via HTML clássico.</div>
+      </div>
+      <!-- SEO TAB -->
+      <div id="ptab-seo" class="tab-content">
+        <div class="info-box">Os campos SEO abaixo serão salvos como metadados do WordPress e lidos pelo Rank Math (campos <code>rank_math_title</code>, <code>rank_math_description</code>, <code>rank_math_focus_keyword</code>).</div>
+        <div class="fg" style="margin-bottom:9px">
+          <div class="fd" style="grid-column:1/-1"><label>SEO Title (Rank Math)</label><input type="text" id="pf-seo-title" placeholder="Melhores Whey Proteins do Brasil: Top 9 de 2025"><span class="fhint">Máx 60 caracteres · <span id="seo-title-count" style="color:var(--am)">0</span>/60</span></div>
+          <div class="fd" style="grid-column:1/-1"><label>Meta Description</label><textarea id="pf-seo-desc" rows="3" placeholder="Descubra os 9 melhores whey proteins do Brasil. Comparamos preço, proteína por dose e fixação para você escolher o melhor custo-benefício."></textarea><span class="fhint">150–160 caracteres · <span id="seo-desc-count" style="color:var(--am)">0</span>/160</span></div>
+          <div class="fd"><label>Keyword foco (Rank Math)</label><input type="text" id="pf-seo-kw" placeholder="melhor whey protein brasil"></div>
+          <div class="fd"><label>Schema Type</label><select id="pf-schema"><option value="">Padrão (Article)</option><option value="review">Review</option><option value="faq">FAQPage</option><option value="product">Product</option><option value="collection">CollectionPage</option></select></div>
+        </div>
+      </div>
+      <!-- PRODUCTS TAB -->
+      <div id="ptab-products" class="tab-content">
+        <div style="margin-bottom:12px;font-size:12px;color:var(--tx2)">Vincule produtos do catálogo ORION a esta página. Os links afiliados serão gerados automaticamente no conteúdo.</div>
+        <input class="fi" style="margin-bottom:10px" type="text" placeholder="🔍 Filtrar produtos..." oninput="filterPageProducts(this.value)">
+        <div id="page-prod-list" style="display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto"></div>
+        <div style="margin-top:10px;font-family:'Fira Code',monospace;font-size:10px;color:var(--bl)" id="page-selected-count">0 produtos selecionados</div>
+      </div>
+    </div>
+    <div class="mft">
+      <div class="mft-l" id="page-modal-id-lbl"></div>
+      <div class="mft-a">
+        <button class="btn" onclick="closePageModal()">Cancelar</button>
+        <button class="btn wp" id="page-save-btn" onclick="savePage()">💾 Salvar no WP</button>
+        <button class="btn p" id="page-publish-btn" onclick="publishPage()">✅ Publicar no WP</button>
       </div>
     </div>
   </div>
@@ -500,16 +765,18 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx);font-s
 
 <script>
 // ═══════════════════════════════════════════════
-// CONFIG
+// STATE
 // ═══════════════════════════════════════════════
 let SB_URL = localStorage.getItem('orion_url') || '';
 let SB_KEY = localStorage.getItem('orion_key') || '';
-let PROJECTS = [];
-let CURRENT_PROJECT = null;
-let PRODUCTS = [];
-let KEYWORDS = [];
-let editId = null, delId = null;
+let WP_URL = localStorage.getItem('orion_wp_url') || '';
+let WP_USER = localStorage.getItem('orion_wp_user') || '';
+let WP_PASS = localStorage.getItem('orion_wp_pass') || '';
+let PROJECTS = [], CURRENT_PROJECT = null, PRODUCTS = [], KEYWORDS = [];
+let WP_PAGES = [], WP_PAGES_RAW = [], WP_PAGES_FILTER = '';
+let editId = null, delId = null, editPageId = null;
 let fSrch='', fCl='', fSt='all', kwSrch='', kwSt='all';
+let selectedPageProducts = [], cfgOpen=false, cfgTab='sb';
 
 // ═══════════════════════════════════════════════
 // SUPABASE CLIENT
@@ -527,6 +794,51 @@ async function sb(path, opts={}) {
 }
 
 // ═══════════════════════════════════════════════
+// WORDPRESS API CLIENT
+// ═══════════════════════════════════════════════
+function wpAuth() {
+  return 'Basic ' + btoa(WP_USER + ':' + WP_PASS);
+}
+
+async function wpFetch(endpoint, opts={}) {
+  if (!WP_URL || !WP_USER || !WP_PASS) throw new Error('WordPress não configurado');
+  const url = WP_URL + '/wp-json/wp/v2/' + endpoint;
+  const r = await fetch(url, {
+    headers: {
+      'Authorization': wpAuth(),
+      'Content-Type': 'application/json',
+      ...opts.headers
+    },
+    ...opts
+  });
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({message: r.statusText}));
+    throw new Error(err.message || r.statusText);
+  }
+  return r.json();
+}
+
+async function wpMediaUpload(file, filename) {
+  if (!WP_URL || !WP_USER || !WP_PASS) throw new Error('WordPress não configurado');
+  const url = WP_URL + '/wp-json/wp/v2/media';
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': wpAuth(),
+      'Content-Disposition': 'attachment; filename="' + filename + '"',
+      'Content-Type': file.type
+    },
+    body: file
+  });
+  if (!r.ok) throw new Error('Upload falhou: ' + r.statusText);
+  return r.json();
+}
+
+function isWpConnected() {
+  return !!(WP_URL && WP_USER && WP_PASS);
+}
+
+// ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
 async function init() {
@@ -534,8 +846,6 @@ async function init() {
   if (!SB_URL || !SB_KEY) {
     setConnBar('err', '⚠ Supabase não configurado — clique em ⚙ Config para conectar');
     document.getElementById('cfg-panel').style.display = 'block';
-    document.getElementById('cfg-url').value = SB_URL;
-    document.getElementById('cfg-key').value = SB_KEY;
     return;
   }
   try {
@@ -545,7 +855,9 @@ async function init() {
     const saved = localStorage.getItem('orion_project');
     const proj = PROJECTS.find(p => p.id === saved) || PROJECTS[0];
     await switchProject(proj.id);
-    setConnBar('ok', '✓ Conectado · ' + PROJECTS.length + ' projetos carregados');
+    const wpSt = isWpConnected() ? ' · WP: ' + WP_URL.replace('https://','') : ' · WP: não configurado';
+    setConnBar('ok', '✓ Conectado · ' + PROJECTS.length + ' projetos' + wpSt);
+    updateWpStatus();
   } catch(e) {
     setConnBar('err', '✗ ' + e.message);
   }
@@ -557,13 +869,93 @@ function setConnBar(type, msg) {
   b.textContent = msg;
 }
 
+function updateWpStatus() {
+  const st = document.getElementById('ov-wp-st');
+  const wc = document.getElementById('wp-conn-status');
+  if (isWpConnected()) {
+    st.textContent = '✓ ' + WP_URL.replace('https://','').replace('http://','');
+    st.style.color = 'var(--gr)';
+    wc.textContent = 'Supabase · WordPress · Cloudflare';
+    wc.style.color = 'var(--gr)';
+    document.getElementById('sync-site').textContent = WP_URL.replace('https://','');
+    document.getElementById('sync-site').style.color = 'var(--gr)';
+    document.getElementById('sync-user').textContent = WP_USER;
+    document.getElementById('sync-user').style.color = 'var(--gr)';
+    document.getElementById('wp-site-url').textContent = WP_URL.replace('https://','');
+  } else {
+    st.textContent = 'Não configurado';
+    st.style.color = 'var(--tx3)';
+    wc.textContent = 'Supabase · WP não configurado';
+    wc.style.color = 'var(--am)';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════
+let cfgTabActive = 'sb';
+function toggleCfg() {
+  cfgOpen = !cfgOpen;
+  const p = document.getElementById('cfg-panel');
+  p.style.display = cfgOpen ? 'block' : 'none';
+  if (cfgOpen) {
+    document.getElementById('cfg-url').value = SB_URL;
+    document.getElementById('cfg-key').value = SB_KEY;
+    document.getElementById('cfg-wp-url').value = WP_URL;
+    document.getElementById('cfg-wp-user').value = WP_USER;
+    document.getElementById('cfg-wp-pass').value = WP_PASS;
+  }
+}
+
+function switchCfgTab(tab, btn) {
+  cfgTabActive = tab;
+  document.querySelectorAll('.cfg-tab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('cfg-sb-panel').style.display = tab === 'sb' ? 'block' : 'none';
+  document.getElementById('cfg-wp-panel').style.display = tab === 'wp' ? 'block' : 'none';
+}
+
+async function saveConfig() {
+  SB_URL = document.getElementById('cfg-url').value.trim();
+  SB_KEY = document.getElementById('cfg-key').value.trim();
+  localStorage.setItem('orion_url', SB_URL);
+  localStorage.setItem('orion_key', SB_KEY);
+  const st = document.getElementById('cfg-status');
+  st.style.color = 'var(--am)'; st.textContent = '⌛ Testando...';
+  try {
+    await sb('projects?limit=1');
+    st.style.color = 'var(--gr)'; st.textContent = '✓ Conectado!';
+    showToast('ok', '✅ Supabase conectado!');
+    cfgOpen = false; document.getElementById('cfg-panel').style.display = 'none';
+    await init();
+  } catch(e) { st.style.color = 'var(--rd)'; st.textContent = '✗ ' + e.message; }
+}
+
+async function saveWpConfig() {
+  WP_URL = document.getElementById('cfg-wp-url').value.trim().replace(/\/$/, '');
+  WP_USER = document.getElementById('cfg-wp-user').value.trim();
+  WP_PASS = document.getElementById('cfg-wp-pass').value.trim();
+  localStorage.setItem('orion_wp_url', WP_URL);
+  localStorage.setItem('orion_wp_user', WP_USER);
+  localStorage.setItem('orion_wp_pass', WP_PASS);
+  const st = document.getElementById('cfg-wp-status');
+  st.style.color = 'var(--am)'; st.textContent = '⌛ Testando conexão...';
+  try {
+    const data = await wpFetch('users/me');
+    st.style.color = 'var(--gr)'; st.textContent = '✓ Conectado como: ' + data.name;
+    showToast('wp', '⚡ WordPress conectado: ' + data.name);
+    cfgOpen = false; document.getElementById('cfg-panel').style.display = 'none';
+    updateWpStatus();
+  } catch(e) { st.style.color = 'var(--rd)'; st.textContent = '✗ ' + e.message; showToast('er', 'WP Erro: ' + e.message); }
+}
+
 // ═══════════════════════════════════════════════
 // PROJECTS
 // ═══════════════════════════════════════════════
 function populateProjectSelect() {
   const sel = document.getElementById('proj-sel');
   sel.innerHTML = PROJECTS.map(p =>
-    `<option value="${p.id}">${p.niche === 'Perfumes' ? '🌸' : '💊'} ${p.name}</option>`
+    '<option value="' + p.id + '">' + (p.niche === 'Perfumes' ? '🌸' : '💊') + ' ' + p.name + '</option>'
   ).join('');
 }
 
@@ -573,16 +965,12 @@ async function switchProject(id) {
   localStorage.setItem('orion_project', id);
   document.getElementById('proj-sel').value = id;
   document.getElementById('sb-domain').textContent = CURRENT_PROJECT.domain;
-
-  // Load data
   const [prods, kws] = await Promise.all([
-    sb(`products?project_id=eq.${id}&order=cluster,sort_order`),
-    sb(`keywords?project_id=eq.${id}&order=monthly_volume.desc`)
+    sb('products?project_id=eq.' + id + '&order=cluster,sort_order'),
+    sb('keywords?project_id=eq.' + id + '&order=monthly_volume.desc')
   ]);
   PRODUCTS = prods;
   KEYWORDS = kws;
-
-  // Populate cluster filter options
   populateClusterFilter();
   updateStats();
   updateDashboard();
@@ -595,23 +983,45 @@ function populateClusterFilter() {
   const clusters = [...new Set(PRODUCTS.map(p => p.cluster).filter(Boolean))].sort();
   const sel = document.getElementById('cl-filter');
   sel.innerHTML = '<option value="">Todos clusters</option>' +
-    clusters.map(c => `<option value="${c}">${clusterLabel(c)}</option>`).join('');
+    clusters.map(c => '<option value="' + c + '">' + clusterLabel(c) + '</option>').join('');
 }
 
 // ═══════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════
-const TITLES = {dashboard:'Dashboard',produtos:'Produtos',keywords:'Keywords',publicados:'Publicados',rascunhos:'Rascunhos',afiliados:'Afiliados'};
+const TITLES = {dashboard:'Dashboard',produtos:'Produtos',keywords:'Keywords',publicados:'Publicados',rascunhos:'Rascunhos',afiliados:'Afiliados','wp-paginas':'Páginas WP','wp-sync':'Sincronizar WP'};
 function goTo(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
-  document.getElementById('page-'+id).classList.add('on');
-  document.querySelectorAll('.nb').forEach(b => { if(b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('on'); });
+  document.getElementById('page-' + id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('on');
+  });
   document.getElementById('tb-title').textContent = TITLES[id] || id;
-  if(id==='produtos') renderProds();
-  if(id==='publicados') renderFiltered('published','g-pub');
-  if(id==='rascunhos') renderFiltered('draft','g-draft');
-  if(id==='keywords') renderKw();
+  if (id === 'produtos') renderProds();
+  if (id === 'publicados') renderFiltered('published', 'g-pub');
+  if (id === 'rascunhos') renderFiltered('draft', 'g-draft');
+  if (id === 'keywords') renderKw();
+  if (id === 'wp-paginas') {
+    if (!isWpConnected()) {
+      document.getElementById('wp-not-configured').style.display = 'block';
+      document.getElementById('wp-pages-content').style.display = 'none';
+    } else {
+      document.getElementById('wp-not-configured').style.display = 'none';
+      document.getElementById('wp-pages-content').style.display = 'block';
+      loadWpPages();
+    }
+  }
+  if (id === 'wp-sync') {
+    if (!isWpConnected()) {
+      document.getElementById('sync-wp-not-configured').style.display = 'block';
+      document.getElementById('sync-content').style.display = 'none';
+    } else {
+      document.getElementById('sync-wp-not-configured').style.display = 'none';
+      document.getElementById('sync-content').style.display = 'block';
+      renderSyncList();
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -625,11 +1035,12 @@ function updateStats() {
   set('st-t',t); set('st-p',p); set('st-d',d); set('st-l',l);
   set('nb-t',t); set('nb-k',KEYWORDS.length); set('nb-p',p); set('nb-d',d);
   set('ov-az',az+' links'); set('ov-sh',sh+' links'); set('ov-nl',nl+' prod.');
+  if(document.getElementById('sync-pub-count')){set('sync-pub-count',p+' prods');set('sync-az-count',az+' links');set('sync-sh-count',sh+' links');}
   const clusters = [...new Set(PRODUCTS.map(p=>p.cluster).filter(Boolean))].sort();
   const ov = document.getElementById('ov-clusters');
   ov.innerHTML = clusters.map(c => {
     const cnt = PRODUCTS.filter(p=>p.cluster===c).length;
-    return `<div class="ovi"><span class="ovi-n">${clusterLabel(c)}</span><span class="ovi-v" style="color:var(--bl)">${cnt}</span></div>`;
+    return '<div class="ovi"><span class="ovi-n">' + clusterLabel(c) + '</span><span class="ovi-v" style="color:var(--bl)">' + cnt + '</span></div>';
   }).join('') || '<div style="font-size:12px;color:var(--tx3)">Nenhum produto</div>';
 }
 
@@ -661,40 +1072,43 @@ function buildCard(p) {
   const stMap = {published:['sb-pub','PUBLICADO'],draft:['sb-draft','RASCUNHO'],review:['sb-review','REVISÃO']};
   const [scl,slbl] = stMap[p.status] || stMap.draft;
   const azL = p.amazon_url
-    ? `<span class="lb lb-az" title="${p.amazon_url}" onclick="window.open('${p.amazon_url}','_blank')">🟠 Amazon ↗</span>`
-    : `<span class="lb lb-no">Amazon —</span>`;
+    ? '<span class="lb lb-az" title="' + p.amazon_url + '" onclick="window.open(\'' + p.amazon_url + '\',\'_blank\')">🟠 Amazon ↗</span>'
+    : '<span class="lb lb-no">Amazon —</span>';
   const shL = p.shopee_url
-    ? `<span class="lb lb-sh" title="${p.shopee_url}" onclick="window.open('${p.shopee_url}','_blank')">🔴 Shopee ↗</span>`
-    : `<span class="lb lb-no">Shopee —</span>`;
+    ? '<span class="lb lb-sh" title="' + p.shopee_url + '" onclick="window.open(\'' + p.shopee_url + '\',\'_blank\')">🔴 Shopee ↗</span>'
+    : '<span class="lb lb-no">Shopee —</span>';
   const pubBtn = p.status==='published'
-    ? `<button class="pa unp" onclick="togglePub('${p.id}',event)">↓ Despublicar</button>`
-    : `<button class="pa pub" onclick="togglePub('${p.id}',event)">✅ Publicar</button>`;
+    ? '<button class="pa unp" onclick="togglePub(\'' + p.id + '\',event)">↓ Despub.</button>'
+    : '<button class="pa pub" onclick="togglePub(\'' + p.id + '\',event)">✅ Pub.</button>';
   const imgContent = p.image_url
-    ? `<img src="${p.image_url}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`
+    ? '<img src="' + p.image_url + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\'">'
     : (p.emoji || '📦');
-  return `
-<div class="pc ${p.status==='published'?'pub':''}" id="card-${p.id}">
-  <div class="pc-img">${imgContent}</div>
-  <div class="pc-hd">
-    <div class="pc-info">
-      <div class="pc-name" title="${p.name}">${p.name}</div>
-      <div class="pc-brand">${p.brand||''} ${p.concentration?'· '+p.concentration:''}</div>
-      <span class="pc-cl ${clusterClass(p.cluster)}">${clusterLabel(p.cluster||'')}</span>
-    </div>
-    <span class="sbadge ${scl}">${slbl}</span>
-  </div>
-  <div class="pc-meta">
-    ${p.rating?`<span class="mp mp-s">${stars} ${p.rating}</span>`:''}
-    ${p.price_range?`<span class="mp mp-p">R$${p.price_range}</span>`:''}
-    ${p.review_count?`<span class="mp mp-k">${Number(p.review_count).toLocaleString('pt-BR')} aval.</span>`:''}
-  </div>
-  <div class="pc-aff">${azL}${shL}</div>
-  <div class="pc-act">
-    <button class="pa edit" onclick="openModal('edit','${p.id}')">✏ Editar</button>
-    ${pubBtn}
-    <button class="pa del" onclick="openConf('${p.id}')">🗑</button>
-  </div>
-</div>`;
+  const wpBtn = isWpConnected()
+    ? '<button class="pa wp" onclick="syncOneToWp(\'' + p.id + '\',event)">⚡ WP</button>'
+    : '';
+  return '<div class="pc ' + (p.status==='published'?'pub':'') + '" id="card-' + p.id + '">'
+    + '<div class="pc-img">' + imgContent + '</div>'
+    + '<div class="pc-hd">'
+    + '<div class="pc-info">'
+    + '<div class="pc-name" title="' + p.name + '">' + p.name + '</div>'
+    + '<div class="pc-brand">' + (p.brand||'') + (p.concentration?' · '+p.concentration:'') + '</div>'
+    + '<span class="pc-cl ' + clusterClass(p.cluster) + '">' + clusterLabel(p.cluster||'') + '</span>'
+    + '</div>'
+    + '<span class="sbadge ' + scl + '">' + slbl + '</span>'
+    + '</div>'
+    + '<div class="pc-meta">'
+    + (p.rating?'<span class="mp mp-s">' + stars + ' ' + p.rating + '</span>':'')
+    + (p.price_range?'<span class="mp mp-p">R$' + p.price_range + '</span>':'')
+    + (p.review_count?'<span class="mp mp-k">' + Number(p.review_count).toLocaleString('pt-BR') + ' aval.</span>':'')
+    + '</div>'
+    + '<div class="pc-aff">' + azL + shL + '</div>'
+    + '<div class="pc-act">'
+    + '<button class="pa edit" onclick="openModal(\'edit\',\'' + p.id + '\')">✏ Editar</button>'
+    + pubBtn
+    + wpBtn
+    + '<button class="pa del" onclick="openConf(\'' + p.id + '\')">🗑</button>'
+    + '</div>'
+    + '</div>';
 }
 
 // ═══════════════════════════════════════════════
@@ -709,14 +1123,14 @@ function renderProds() {
   });
   const g = document.getElementById('pgrid');
   g.innerHTML = ps.length ? ps.map(buildCard).join('') :
-    `<div class="empty" style="grid-column:1/-1"><div class="empty-i">📦</div><div class="empty-t">${PRODUCTS.length===0?'Nenhum produto neste projeto':'Nenhum resultado'}</div></div>`;
+    '<div class="empty" style="grid-column:1/-1"><div class="empty-i">📦</div><div class="empty-t">' + (PRODUCTS.length===0?'Nenhum produto neste projeto':'Nenhum resultado') + '</div></div>';
 }
 
 function renderFiltered(st,gid) {
   const ps = PRODUCTS.filter(p=>p.status===st);
   const g = document.getElementById(gid);
   g.innerHTML = ps.length ? ps.map(buildCard).join('') :
-    `<div class="empty" style="grid-column:1/-1"><div class="empty-i">📭</div><div class="empty-t">Nenhum produto aqui</div></div>`;
+    '<div class="empty" style="grid-column:1/-1"><div class="empty-i">📭</div><div class="empty-t">Nenhum produto aqui</div></div>';
 }
 
 function filterP(v){fSrch=v;renderProds();}
@@ -724,14 +1138,14 @@ function filterCl(v){fCl=v;renderProds();}
 function filterSt(v,b){fSt=v;document.querySelectorAll('#page-produtos .ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderProds();}
 
 // ═══════════════════════════════════════════════
-// MODAL
+// MODAL PRODUTO
 // ═══════════════════════════════════════════════
 function populateClusterModal() {
   const clusters = [...new Set(PRODUCTS.map(p=>p.cluster).filter(Boolean))].sort();
   const sel = document.getElementById('f-cluster');
   const extra = ['whey','pre','termo','vit','cabelo','massa','hiper','micro','masculino','feminino','unissex'];
   const all = [...new Set([...clusters,...extra])].sort();
-  sel.innerHTML = '<option value="">Selecionar...</option>' + all.map(c=>`<option value="${c}">${clusterLabel(c)}</option>`).join('');
+  sel.innerHTML = '<option value="">Selecionar...</option>' + all.map(c=>'<option value="' + c + '">' + clusterLabel(c) + '</option>').join('');
 }
 
 function clearForm() {
@@ -754,7 +1168,7 @@ function openModal(mode, id) {
   if (mode==='edit' && id) {
     const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
     document.getElementById('modal-t').textContent = 'Editar Produto';
-    document.getElementById('modal-id-lbl').textContent = 'ID: '+p.id;
+    document.getElementById('modal-id-lbl').textContent = 'ID: ' + p.id;
     const map = [['f-name',p.name],['f-brand',p.brand],['f-emoji',p.emoji],['f-rating',p.rating],['f-rcount',p.review_count],['f-price',p.price_range],['f-protein',p.protein_dose],['f-hl',p.highlight],['f-az-url',p.amazon_url],['f-az-btn',p.amazon_btn||'Ver preço na Amazon'],['f-az-price',p.amazon_price],['f-sh-url',p.shopee_url],['f-sh-btn',p.shopee_btn||'Ver opção mais barata na Shopee'],['f-sh-price',p.shopee_price],['f-url',p.review_url],['f-kw',p.keyword],['f-notes',p.notes],['f-img',p.image_url]];
     map.forEach(([fid,val])=>{const el=document.getElementById(fid);if(el&&val!=null)el.value=val;});
     document.getElementById('f-cluster').value=p.cluster||'';
@@ -791,27 +1205,41 @@ async function saveProd(pub=false) {
   if (!d.project_id) { showToast('er','⚠ Selecione um projeto'); return; }
   if (pub) d.status='published';
   try {
+    let savedProduct;
     if (editId) {
-      const res = await sb(`products?id=eq.${editId}`, {method:'PATCH', body:JSON.stringify(d)});
+      const res = await sb('products?id=eq.' + editId, {method:'PATCH', body:JSON.stringify(d)});
       const idx = PRODUCTS.findIndex(p=>p.id===editId);
       if(idx>-1) PRODUCTS[idx] = {...PRODUCTS[idx], ...d, ...(res[0]||{})};
+      savedProduct = PRODUCTS[idx];
       showToast('ok','✓ Produto atualizado');
     } else {
       const res = await sb('products', {method:'POST', body:JSON.stringify(d)});
-      PRODUCTS.push(res[0]||d);
+      savedProduct = res[0] || d;
+      PRODUCTS.push(savedProduct);
       showToast('ok','✓ Produto criado');
     }
     updateStats(); closeModal(); renderProds();
-  } catch(e) { showToast('er','Erro: '+e.message); }
+    return savedProduct;
+  } catch(e) { showToast('er','Erro: '+e.message); return null; }
 }
+
 function saveAndPub(){saveProd(true);}
+
+async function saveAndSyncWp() {
+  const prod = await saveProd(false);
+  if (prod && isWpConnected()) {
+    await doSyncProductToWp(prod);
+  } else if (!isWpConnected()) {
+    showToast('inf', 'Produto salvo. Configure o WP para sincronizar.');
+  }
+}
 
 async function togglePub(id, e) {
   if(e) e.stopPropagation();
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
   const newSt = p.status==='published'?'draft':'published';
   try {
-    await sb(`products?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({status:newSt})});
+    await sb('products?id=eq.'+id, {method:'PATCH', body:JSON.stringify({status:newSt})});
     p.status = newSt;
     updateStats(); renderProds();
     showToast(newSt==='published'?'ok':'inf', newSt==='published'?'✅ Publicado':'↓ Despublicado');
@@ -821,14 +1249,14 @@ async function togglePub(id, e) {
 function openConf(id) {
   delId=id;
   const p=PRODUCTS.find(x=>x.id===id);
-  document.getElementById('conf-msg').textContent=`Excluir "${p?.name||'produto'}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('conf-msg').textContent='Excluir "' + (p?.name||'produto') + '"? Esta ação não pode ser desfeita.';
   document.getElementById('conf-ov').classList.add('on');
 }
 function closeConf(e){if(!e||e.target===document.getElementById('conf-ov')){document.getElementById('conf-ov').classList.remove('on');delId=null;}}
 async function execDel(){
   if(!delId) return;
   try {
-    await sb(`products?id=eq.${delId}`, {method:'DELETE'});
+    await sb('products?id=eq.'+delId, {method:'DELETE'});
     PRODUCTS = PRODUCTS.filter(p=>p.id!==delId);
     updateStats(); closeConf(); renderProds();
     showToast('er','🗑 Produto excluído');
@@ -852,14 +1280,14 @@ function renderKw() {
     const kdc = k.difficulty===null||k.difficulty===undefined?'kd-n':k.difficulty<=20?'kd-e':k.difficulty<=35?'kd-m':'kd-h';
     const pct = Math.round((k.monthly_volume||0)/maxV*100);
     const color = stColor[k.status]||'var(--tx3)';
-    return `<tr>
-      <td class="kwn">${k.keyword}</td>
-      <td><div class="vn">${(k.monthly_volume||0).toLocaleString('pt-BR')}</div><div class="vbw"><div class="vbf" style="width:${pct}%"></div></div></td>
-      <td><span class="kdc ${kdc}">${k.difficulty??'N/M'}</span></td>
-      <td><span style="font-family:'Fira Code',monospace;font-size:9px;color:var(--pu)">${k.content_type||'—'}</span></td>
-      <td><span style="font-size:10px;color:${color}">${stLabel[k.status]||k.status||'—'}</span></td>
-      <td><button class="ck-btn" onclick="createFromKw('${(k.keyword||'').replace(/'/g,"\\'")}','','')">+ Criar</button></td>
-    </tr>`;
+    return '<tr>'
+      + '<td class="kwn">' + k.keyword + '</td>'
+      + '<td><div class="vn">' + (k.monthly_volume||0).toLocaleString('pt-BR') + '</div><div class="vbw"><div class="vbf" style="width:' + pct + '%"></div></div></td>'
+      + '<td><span class="kdc ' + kdc + '">' + (k.difficulty??'N/M') + '</span></td>'
+      + '<td><span style="font-family:\'Fira Code\',monospace;font-size:9px;color:var(--pu)">' + (k.content_type||'—') + '</span></td>'
+      + '<td><span style="font-size:10px;color:' + color + '">' + (stLabel[k.status]||k.status||'—') + '</span></td>'
+      + '<td><button class="ck-btn" onclick="createFromKw(\'' + (k.keyword||'').replace(/'/g,"\\'") + '\',\'\',\'\')">+ Criar</button></td>'
+      + '</tr>';
   }).join('');
 }
 function filterKw(v){kwSrch=v;renderKw();}
@@ -869,40 +1297,467 @@ function createFromKw(kw,cl,url){openModal('new');setTimeout(()=>{document.getEl
 // ═══════════════════════════════════════════════
 // IMAGE
 // ═══════════════════════════════════════════════
+let imgFile = null;
 function handleImg(input){
   const f=input.files[0];if(!f)return;
   if(f.size>2*1024*1024){showToast('er','Imagem maior que 2MB');return;}
+  imgFile = f;
   const r=new FileReader();
-  r.onload=e=>{const p=document.getElementById('img-prev');p.src=e.target.result;p.classList.add('show');document.getElementById('img-lbl').style.display='none';document.getElementById('f-img').value=e.target.result;};
+  r.onload=e=>{const p=document.getElementById('img-prev');p.src=e.target.result;p.classList.add('show');document.getElementById('img-lbl').style.display='none';document.getElementById('f-img').value='';};
   r.readAsDataURL(f);
 }
-function prevImgUrl(url){if(!url)return;const p=document.getElementById('img-prev');p.src=url;p.classList.add('show');document.getElementById('img-lbl').style.display='none';}
+function prevImgUrl(url){if(!url)return;imgFile=null;const p=document.getElementById('img-prev');p.src=url;p.classList.add('show');document.getElementById('img-lbl').style.display='none';}
 function dropImg(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('img-file').files=dt.files;handleImg({files:dt.files});}}
 
-// ═══════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════
-let cfgOpen=false;
-function toggleCfg(){
-  cfgOpen=!cfgOpen;
-  const p=document.getElementById('cfg-panel');
-  p.style.display=cfgOpen?'block':'none';
-  if(cfgOpen){document.getElementById('cfg-url').value=SB_URL;document.getElementById('cfg-key').value=SB_KEY;}
+async function uploadImgToWp(file, name) {
+  if (!isWpConnected()) return null;
+  try {
+    showToast('wp','⬆ Enviando imagem ao WordPress...');
+    const ext = file.name.split('.').pop();
+    const filename = name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '.' + ext;
+    const media = await wpMediaUpload(file, filename);
+    showToast('ok','✓ Imagem enviada ao WP Media');
+    return media.source_url;
+  } catch(e) {
+    showToast('er','Erro upload imagem: ' + e.message);
+    return null;
+  }
 }
-async function saveConfig(){
-  SB_URL=document.getElementById('cfg-url').value.trim();
-  SB_KEY=document.getElementById('cfg-key').value.trim();
-  localStorage.setItem('orion_url',SB_URL);
-  localStorage.setItem('orion_key',SB_KEY);
-  const st=document.getElementById('cfg-status');
-  st.style.color='var(--am)'; st.textContent='⌛ Testando...';
-  try{
-    await sb('projects?limit=1');
-    st.style.color='var(--gr)'; st.textContent='✓ Conectado!';
-    showToast('ok','✅ Supabase conectado!');
-    cfgOpen=false; document.getElementById('cfg-panel').style.display='none';
-    await init();
-  }catch(e){st.style.color='var(--rd)';st.textContent='✗ '+e.message;showToast('er','Erro: '+e.message);}
+
+// ═══════════════════════════════════════════════
+// WORDPRESS PAGES
+// ═══════════════════════════════════════════════
+async function loadWpPages() {
+  const list = document.getElementById('wp-pages-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando páginas...</div>';
+  try {
+    const [pages, posts] = await Promise.all([
+      wpFetch('pages?per_page=50&orderby=title&order=asc'),
+      wpFetch('posts?per_page=50&orderby=date&order=desc')
+    ]);
+    WP_PAGES = [...pages.map(p=>({...p,_type:'page'})), ...posts.map(p=>({...p,_type:'post'}))];
+    WP_PAGES_RAW = WP_PAGES;
+    renderWpPagesList();
+    set('wp-pages-count', WP_PAGES.length + ' itens carregados');
+    showToast('wp','⚡ ' + pages.length + ' páginas + ' + posts.length + ' posts carregados');
+  } catch(e) {
+    list.innerHTML = '<div class="empty"><div class="empty-i">⚠</div><div class="empty-t">Erro ao carregar</div><div style="font-size:11px;color:var(--rd);margin-top:4px">' + e.message + '</div></div>';
+    showToast('er','Erro WP: ' + e.message);
+  }
+}
+
+function renderWpPagesList() {
+  const q = WP_PAGES_FILTER.toLowerCase();
+  const sfEl = document.getElementById('wp-st-filter');
+  const sf = sfEl ? sfEl.value : '';
+  const filtered = WP_PAGES.filter(p => {
+    const title = (p.title?.rendered || '').toLowerCase();
+    const matchQ = !q || title.includes(q);
+    const matchSt = !sf || p.status === sf;
+    return matchQ && matchSt;
+  });
+  const list = document.getElementById('wp-pages-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-i">📄</div><div class="empty-t">Nenhuma página encontrada</div></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(p => {
+    const title = p.title?.rendered || '(sem título)';
+    const slug = p.slug || '';
+    const status = p.status;
+    const stCls = status === 'publish' ? 'wp-s-publish' : 'wp-s-draft';
+    const stLbl = status === 'publish' ? 'Publicado' : 'Rascunho';
+    const type = p._type === 'post' ? 'POST' : 'PÁGINA';
+    const date = p.modified ? new Date(p.modified).toLocaleDateString('pt-BR') : '';
+    const wpLink = p.link || '';
+    return '<div class="wp-row">'
+      + '<div class="wp-row-info">'
+      + '<div class="wp-row-title">' + title + ' <span style="font-family:\'Fira Code\',monospace;font-size:8px;color:var(--tx3);background:var(--bg4);padding:1px 4px;border-radius:3px">' + type + '</span></div>'
+      + '<div class="wp-row-meta">/' + slug + ' · ' + date + '</div>'
+      + '</div>'
+      + '<span class="wp-status ' + stCls + '">' + stLbl + '</span>'
+      + '<div class="wp-row-acts">'
+      + (wpLink?'<button class="wp-act view" onclick="window.open(\'' + wpLink + '\',\'_blank\')">Ver ↗</button>':'')
+      + '<button class="wp-act create" onclick="openPageModal(\'edit\',' + p.id + ')">✏ Editar</button>'
+      + '<button class="wp-act del" onclick="deleteWpPage(' + p.id + ',\'' + p._type + '\')">🗑</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+  set('wp-pages-count', filtered.length + ' de ' + WP_PAGES.length + ' itens');
+}
+
+function filterWpPages(v){WP_PAGES_FILTER=v;renderWpPagesList();}
+function filterWpPagesSt(v){renderWpPagesList();}
+
+async function deleteWpPage(id, type) {
+  if (!confirm('Excluir esta ' + (type==='post'?'post':'página') + ' do WordPress?')) return;
+  try {
+    await wpFetch((type==='post'?'posts':'pages') + '/' + id + '?force=true', {method:'DELETE'});
+    WP_PAGES = WP_PAGES.filter(p=>p.id!==id);
+    renderWpPagesList();
+    set('wp-pages-count', WP_PAGES.length + ' itens carregados');
+    showToast('ok','🗑 Excluído do WordPress');
+  } catch(e) { showToast('er','Erro: ' + e.message); }
+}
+
+// ═══════════════════════════════════════════════
+// PAGE MODAL
+// ═══════════════════════════════════════════════
+function openPageModal(mode, wpId) {
+  editPageId = mode==='edit' ? wpId : null;
+  selectedPageProducts = [];
+  document.getElementById('pf-title').value='';
+  document.getElementById('pf-slug').value='';
+  document.getElementById('pf-status').value='draft';
+  document.getElementById('pf-type').value='page';
+  document.getElementById('pf-parent').value='';
+  document.getElementById('pf-order').value='0';
+  document.getElementById('pf-excerpt').value='';
+  document.getElementById('pf-content').value='';
+  document.getElementById('pf-seo-title').value='';
+  document.getElementById('pf-seo-desc').value='';
+  document.getElementById('pf-seo-kw').value='';
+  document.getElementById('pf-schema').value='';
+
+  if (mode==='edit' && wpId) {
+    const pg = WP_PAGES.find(p=>p.id===wpId);
+    if (pg) {
+      document.getElementById('page-modal-t').textContent='Editar: ' + (pg.title?.rendered||'');
+      document.getElementById('pf-title').value = pg.title?.rendered || '';
+      document.getElementById('pf-slug').value = pg.slug || '';
+      document.getElementById('pf-status').value = pg.status === 'publish' ? 'publish' : 'draft';
+      document.getElementById('pf-type').value = pg._type || 'page';
+      document.getElementById('pf-parent').value = pg.parent || '';
+      document.getElementById('pf-order').value = pg.menu_order || '0';
+      document.getElementById('pf-excerpt').value = pg.excerpt?.rendered?.replace(/<[^>]*>/g,'') || '';
+      document.getElementById('pf-content').value = pg.content?.raw || pg.content?.rendered?.replace(/<[^>]*>/g,'') || '';
+      const badge = document.getElementById('page-wp-id-badge');
+      badge.style.display='inline-flex'; badge.textContent='WP ID: ' + wpId;
+      document.getElementById('page-modal-id-lbl').textContent='WP ID: ' + wpId;
+    }
+  } else {
+    document.getElementById('page-modal-t').textContent='Nova Página';
+    document.getElementById('page-wp-id-badge').style.display='none';
+    document.getElementById('page-modal-id-lbl').textContent='';
+  }
+  switchPageTab('basic', document.querySelector('.tabs .tab'));
+  renderPageProductList();
+  document.getElementById('page-modal-ov').classList.add('on');
+  setTimeout(()=>document.getElementById('pf-title').focus(),100);
+
+  // SEO char counters
+  document.getElementById('pf-seo-title').oninput = function(){set('seo-title-count',this.value.length);};
+  document.getElementById('pf-seo-desc').oninput = function(){set('seo-desc-count',this.value.length);};
+}
+
+function closePageModal(){document.getElementById('page-modal-ov').classList.remove('on');editPageId=null;}
+function closePageModalOv(e){if(e.target===document.getElementById('page-modal-ov'))closePageModal();}
+
+function switchPageTab(tab, btn) {
+  document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  else document.querySelectorAll('.tabs .tab')[0].classList.add('on');
+  const el = document.getElementById('ptab-'+tab);
+  if(el) el.classList.add('on');
+}
+
+function renderPageProductList(filter='') {
+  const q = filter.toLowerCase();
+  const ps = PRODUCTS.filter(p => !q || p.name.toLowerCase().includes(q) || (p.brand||'').toLowerCase().includes(q));
+  const el = document.getElementById('page-prod-list');
+  el.innerHTML = ps.map(p => {
+    const sel = selectedPageProducts.includes(p.id);
+    return '<label style="display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:7px;background:' + (sel?'var(--bg4)':'var(--bg3)') + ';cursor:pointer;border:1px solid ' + (sel?'var(--gr-b)':'transparent') + '">'
+      + '<input type="checkbox" value="' + p.id + '" ' + (sel?'checked':'') + ' onchange="togglePageProduct(\'' + p.id + '\',this.checked)">'
+      + '<span style="font-size:12px;font-weight:600;flex:1">' + p.name + '</span>'
+      + '<span class="pc-cl ' + clusterClass(p.cluster) + '" style="font-size:8px">' + clusterLabel(p.cluster||'') + '</span>'
+      + (p.amazon_url?'<span style="font-size:9px;color:var(--az)">🟠</span>':'')
+      + (p.shopee_url?'<span style="font-size:9px;color:var(--sh)">🔴</span>':'')
+      + '</label>';
+  }).join('');
+  set('page-selected-count', selectedPageProducts.length + ' produtos selecionados');
+}
+
+function filterPageProducts(v){renderPageProductList(v);}
+function togglePageProduct(id, checked) {
+  if(checked && !selectedPageProducts.includes(id)) selectedPageProducts.push(id);
+  if(!checked) selectedPageProducts = selectedPageProducts.filter(x=>x!==id);
+  set('page-selected-count', selectedPageProducts.length + ' produtos selecionados');
+  renderPageProductList(document.querySelector('#ptab-products .fi')?.value||'');
+}
+
+// ═══════════════════════════════════════════════
+// CONTENT GENERATORS
+// ═══════════════════════════════════════════════
+function generateProductTable() {
+  const prods = selectedPageProducts.length
+    ? PRODUCTS.filter(p=>selectedPageProducts.includes(p.id))
+    : PRODUCTS.slice(0,8);
+  if(!prods.length){showToast('inf','Selecione produtos na aba Produtos Vinculados');return;}
+  let html = '<table class="wp-products-table" style="width:100%;border-collapse:collapse;margin:20px 0">\n';
+  html += '<thead><tr style="background:#f5f5f5">'
+    + '<th style="padding:10px;text-align:left;border-bottom:2px solid #ddd">Produto</th>'
+    + '<th style="padding:10px;text-align:center;border-bottom:2px solid #ddd">Avaliação</th>'
+    + '<th style="padding:10px;text-align:center;border-bottom:2px solid #ddd">Preço</th>'
+    + '<th style="padding:10px;text-align:center;border-bottom:2px solid #ddd">Amazon</th>'
+    + '<th style="padding:10px;text-align:center;border-bottom:2px solid #ddd">Shopee</th>'
+    + '</tr></thead>\n<tbody>\n';
+  prods.forEach((p,i) => {
+    const bg = i%2===0?'#fff':'#fafafa';
+    const stars = p.rating ? '★'.repeat(Math.round(p.rating)) + ' ' + p.rating : '—';
+    const price = p.price_range ? 'R$' + p.price_range : (p.amazon_price || '—');
+    const azBtn = p.amazon_url ? '<a href="' + p.amazon_url + '" target="_blank" rel="nofollow" style="background:#ff9900;color:#fff;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:700">Amazon</a>' : '—';
+    const shBtn = p.shopee_url ? '<a href="' + p.shopee_url + '" target="_blank" rel="nofollow" style="background:#ee4d2d;color:#fff;padding:6px 12px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:700">Shopee</a>' : '—';
+    html += '<tr style="background:' + bg + '">'
+      + '<td style="padding:10px;border-bottom:1px solid #eee"><strong>' + p.name + '</strong><br><small style="color:#666">' + (p.brand||'') + (p.highlight?' · ' + p.highlight:'') + '</small></td>'
+      + '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee">' + stars + '</td>'
+      + '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee">' + price + '</td>'
+      + '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee">' + azBtn + '</td>'
+      + '<td style="padding:10px;text-align:center;border-bottom:1px solid #eee">' + shBtn + '</td>'
+      + '</tr>\n';
+  });
+  html += '</tbody>\n</table>\n';
+  document.getElementById('pf-content').value += html;
+  switchPageTab('content', document.querySelectorAll('.tabs .tab')[1]);
+  showToast('ok','✓ Tabela de produtos gerada com ' + prods.length + ' itens');
+}
+
+function generateReviewTemplate() {
+  const prods = selectedPageProducts.length ? PRODUCTS.filter(p=>selectedPageProducts.includes(p.id)) : [];
+  const p = prods[0];
+  const title = document.getElementById('pf-title').value || '[Nome do Produto]';
+  let html = '<!-- REVIEW TEMPLATE - ORION v3 -->\n';
+  html += '<div class="review-summary" style="background:#f0f7ff;border-left:4px solid #0073aa;padding:14px 16px;margin:16px 0;border-radius:0 8px 8px 0">\n';
+  html += '<strong>Resumo rápido:</strong> ' + (p ? p.name + ' — ' + (p.highlight||'') + '. Fixação: ' + (p.protein_dose||'—') + '. Preço médio: R$' + (p.price_range||'—') + '.' : '[Descrição direta do produto em 2 frases.]') + '\n</div>\n\n';
+  html += '<h2>Ficha Técnica</h2>\n';
+  html += '<table style="width:100%;border-collapse:collapse;margin:16px 0">\n';
+  const rows = p ? [['Marca',p.brand||'—'],['Cluster',clusterLabel(p.cluster||'')],['Avaliação',p.rating?p.rating+'/5':'—'],['Nº Avaliações',p.review_count?Number(p.review_count).toLocaleString('pt-BR'):'—'],['Preço',p.price_range?'R$'+p.price_range:'—'],['Concentração',p.concentration||'—']] : [['Marca',''],['Família',''],['Notas',''],['Fixação',''],['Projeção',''],['Ocasião','']];
+  rows.forEach(([k,v]) => {
+    html += '<tr><td style="padding:8px 10px;border:1px solid #e0e0e0;background:#f9f9f9;font-weight:700;width:35%">' + k + '</td><td style="padding:8px 10px;border:1px solid #e0e0e0">' + v + '</td></tr>\n';
+  });
+  html += '</table>\n\n';
+  if (p && p.amazon_url) {
+    html += '<div style="text-align:center;margin:20px 0">\n';
+    html += '<a href="' + p.amazon_url + '" target="_blank" rel="nofollow" style="background:#ff9900;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-size:15px;font-weight:700;display:inline-block">' + (p.amazon_btn||'Ver preço na Amazon') + ' →</a>\n';
+    if (p.shopee_url) html += ' <a href="' + p.shopee_url + '" target="_blank" rel="nofollow" style="background:#ee4d2d;color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-size:15px;font-weight:700;display:inline-block;margin-top:8px">' + (p.shopee_btn||'Ver na Shopee') + ' →</a>\n';
+    html += '</div>\n\n';
+  }
+  html += '<h2>Como é o produto</h2>\n<p>[Descrição em pirâmide invertida: resposta direta + detalhes]</p>\n\n';
+  html += '<h2>Vale a pena comprar? Veredito Final</h2>\n<p>[Resposta direta: sim/não/depende + para quem vale]</p>\n\n';
+  html += '<!-- FAQ - FAQPage Schema -->\n<h2>Perguntas Frequentes</h2>\n<div class="faq-block">\n<h3>É original no Brasil?</h3>\n<p>[Resposta direta...]</p>\n<h3>Qual o prazo de entrega?</h3>\n<p>[Resposta direta...]</p>\n</div>\n';
+  document.getElementById('pf-content').value = html;
+  switchPageTab('content', document.querySelectorAll('.tabs .tab')[1]);
+  showToast('ok','✓ Template review gerado');
+}
+
+function generateClusterTemplate() {
+  const prods = selectedPageProducts.length ? PRODUCTS.filter(p=>selectedPageProducts.includes(p.id)) : PRODUCTS.slice(0,6);
+  const title = document.getElementById('pf-title').value || 'Melhores Produtos';
+  let html = '<!-- CLUSTER TEMPLATE - ORION v3 -->\n';
+  html += '<p><strong>Resposta direta:</strong> Os ' + prods.length + ' melhores produtos desta categoria em 2025, selecionados por avaliação, custo-benefício e disponibilidade no Brasil.</p>\n\n';
+  prods.forEach((p,i) => {
+    html += '<h2>' + (i+1) + '. ' + p.name + (p.highlight?' — '+p.highlight:'') + '</h2>\n';
+    html += '<p>' + p.name + ' ' + (p.highlight||'é uma das melhores opções') + '. ' + (p.rating?'Avaliado com ' + p.rating + '/5 ('+Number(p.review_count||0).toLocaleString('pt-BR')+' avaliações). ':'') + (p.price_range?'Preço médio: R$'+p.price_range+'. ':'') + '</p>\n';
+    if(p.amazon_url) html += '<p><a href="' + p.amazon_url + '" target="_blank" rel="nofollow" style="background:#ff9900;color:#fff;padding:8px 18px;border-radius:4px;text-decoration:none;font-size:13px;font-weight:700">' + (p.amazon_btn||'Ver preço na Amazon') + ' →</a></p>\n\n';
+    else html += '\n';
+  });
+  html += '<h2>Tabela Comparativa</h2>\n';
+  generateProductTable();
+  document.getElementById('pf-content').value = html + document.getElementById('pf-content').value;
+  switchPageTab('content', document.querySelectorAll('.tabs .tab')[1]);
+  showToast('ok','✓ Template cluster gerado com ' + prods.length + ' produtos');
+}
+
+function insertFAQBlock() {
+  const faq = '\n<!-- FAQ BLOCK -->\n<h2>Perguntas Frequentes</h2>\n<div class="faq-container">\n<h3>Pergunta 1?</h3>\n<p>Resposta direta em 1-2 frases.</p>\n<h3>Pergunta 2?</h3>\n<p>Resposta direta em 1-2 frases.</p>\n<h3>Pergunta 3?</h3>\n<p>Resposta direta em 1-2 frases.</p>\n</div>\n';
+  document.getElementById('pf-content').value += faq;
+  showToast('inf','❓ Bloco FAQ inserido');
+}
+
+// ═══════════════════════════════════════════════
+// SAVE/PUBLISH PAGE TO WP
+// ═══════════════════════════════════════════════
+function getPageForm() {
+  const v = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+  return {
+    title: v('pf-title'),
+    slug: v('pf-slug'),
+    status: v('pf-status'),
+    type: v('pf-type'),
+    parent: parseInt(v('pf-parent'))||0,
+    order: parseInt(v('pf-order'))||0,
+    excerpt: v('pf-excerpt'),
+    content: document.getElementById('pf-content').value,
+    seoTitle: v('pf-seo-title'),
+    seoDesc: v('pf-seo-desc'),
+    seoKw: v('pf-seo-kw'),
+    schema: v('pf-schema')
+  };
+}
+
+async function savePage(pub=false) {
+  const f = getPageForm();
+  if (!f.title) { showToast('er','⚠ Título obrigatório'); return; }
+  if (pub) f.status = 'publish';
+  const payload = {
+    title: f.title,
+    content: f.content,
+    status: f.status,
+    excerpt: f.excerpt,
+    meta: {}
+  };
+  if (f.slug) payload.slug = f.slug;
+  if (f.parent) payload.parent = f.parent;
+  if (f.order) payload.menu_order = f.order;
+  if (f.seoTitle) payload.meta.rank_math_title = f.seoTitle;
+  if (f.seoDesc) payload.meta.rank_math_description = f.seoDesc;
+  if (f.seoKw) payload.meta.rank_math_focus_keyword = f.seoKw;
+  const endpoint = f.type === 'post' ? 'posts' : 'pages';
+  try {
+    let result;
+    if (editPageId) {
+      result = await wpFetch(endpoint + '/' + editPageId, {method:'PUT', body:JSON.stringify(payload)});
+      const idx = WP_PAGES.findIndex(p=>p.id===editPageId);
+      if(idx>-1) WP_PAGES[idx] = {...WP_PAGES[idx], ...result};
+      showToast('wp','✓ Página atualizada no WP');
+    } else {
+      result = await wpFetch(endpoint, {method:'POST', body:JSON.stringify(payload)});
+      WP_PAGES.unshift({...result,_type:f.type});
+      showToast('wp','✓ Página criada no WP: ' + result.link);
+    }
+    renderWpPagesList();
+    closePageModal();
+  } catch(e) { showToast('er','Erro WP: ' + e.message); }
+}
+
+function publishPage(){savePage(true);}
+
+// ═══════════════════════════════════════════════
+// SYNC PRODUCTS TO WP
+// ═══════════════════════════════════════════════
+function renderSyncList() {
+  const el = document.getElementById('sync-prod-list');
+  el.innerHTML = PRODUCTS.map(p => {
+    const az = p.amazon_url ? '🟠' : '';
+    const sh = p.shopee_url ? '🔴' : '';
+    return '<label style="display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;background:var(--bg3);cursor:pointer;border:1px solid var(--b1)">'
+      + '<input type="checkbox" class="sync-cb" value="' + p.id + '">'
+      + '<span style="font-size:12px;font-weight:600;flex:1">' + p.name + '</span>'
+      + '<span class="pc-cl ' + clusterClass(p.cluster) + '">' + clusterLabel(p.cluster||'') + '</span>'
+      + '<span style="font-size:11px">' + az + sh + '</span>'
+      + '<span class="sbadge ' + (p.status==='published'?'sb-pub':'sb-draft') + '">' + (p.status==='published'?'PUB':'RASCUNHO') + '</span>'
+      + '</label>';
+  }).join('');
+  updateStats();
+}
+
+function selectAllSync(){document.querySelectorAll('.sync-cb').forEach(c=>c.checked=true);}
+function clearSync(){document.querySelectorAll('.sync-cb').forEach(c=>c.checked=false);}
+function selectPublishedSync(){document.querySelectorAll('.sync-cb').forEach(c=>{const p=PRODUCTS.find(x=>x.id===c.value);c.checked=p?.status==='published';});}
+
+async function testWpConnection() {
+  try {
+    const data = await wpFetch('users/me');
+    document.getElementById('sync-api-st').textContent = '✓ OK · ' + data.name;
+    document.getElementById('sync-api-st').style.color = 'var(--gr)';
+    showToast('wp','✓ WP conectado como: ' + data.name);
+  } catch(e) {
+    document.getElementById('sync-api-st').textContent = '✗ ' + e.message;
+    document.getElementById('sync-api-st').style.color = 'var(--rd)';
+    showToast('er','WP Erro: ' + e.message);
+  }
+}
+
+async function syncOneToWp(id, e) {
+  if(e) e.stopPropagation();
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  await doSyncProductToWp(p);
+}
+
+async function syncSelectedToWp() {
+  const selected = [...document.querySelectorAll('.sync-cb:checked')].map(c=>c.value);
+  if (!selected.length) { showToast('inf','Selecione ao menos um produto'); return; }
+  const prods = PRODUCTS.filter(p=>selected.includes(p.id));
+  const log = document.getElementById('sync-log');
+  const progress = document.getElementById('sync-progress');
+  log.style.display='block'; log.innerHTML='';
+  progress.style.display='block';
+  let ok=0, fail=0;
+  for (let i=0; i<prods.length; i++) {
+    const p = prods[i];
+    progress.textContent = 'Enviando ' + (i+1) + '/' + prods.length + ': ' + p.name + '...';
+    const result = await doSyncProductToWp(p, true);
+    if(result) {
+      log.innerHTML += '<span style="color:var(--gr)">✓</span> ' + p.name + '\n';
+      ok++;
+    } else {
+      log.innerHTML += '<span style="color:var(--rd)">✗</span> ' + p.name + ' (erro)\n';
+      fail++;
+    }
+    log.scrollTop = log.scrollHeight;
+    await new Promise(r=>setTimeout(r,300));
+  }
+  progress.textContent = '✓ Concluído: ' + ok + ' enviados, ' + fail + ' erros.';
+  progress.style.color = fail>0?'var(--am)':'var(--gr)';
+  showToast(fail>0?'inf':'ok', ok + ' produtos enviados ao WP');
+}
+
+async function doSyncProductToWp(p, silent=false) {
+  if (!isWpConnected()) { if(!silent) showToast('er','WordPress não configurado'); return false; }
+  const type = document.querySelector('input[name="sync-type"]:checked')?.value || 'page';
+  const slug = (p.review_url || p.keyword || p.name || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  const stars = p.rating ? '★'.repeat(Math.round(p.rating))+'☆'.repeat(5-Math.round(p.rating)) : '';
+  const azBtn = p.amazon_url
+    ? '<div style="text-align:center;margin:16px 0"><a href="' + p.amazon_url + '" target="_blank" rel="nofollow" style="background:#ff9900;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-size:15px;font-weight:700;display:inline-block">' + (p.amazon_btn||'Ver preço na Amazon') + ' →</a></div>'
+    : '';
+  const shBtn = p.shopee_url
+    ? '<div style="text-align:center;margin:8px 0"><a href="' + p.shopee_url + '" target="_blank" rel="nofollow" style="background:#ee4d2d;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:700;display:inline-block">' + (p.shopee_btn||'Ver opção mais barata na Shopee') + ' →</a></div>'
+    : '';
+  const imgHtml = p.image_url ? '<div style="text-align:center;margin:16px 0"><img src="' + p.image_url + '" alt="' + p.name + '" style="max-width:400px;border-radius:8px"></div>' : '';
+  const content = '<div class="orion-product">'
+    + '<div style="background:#f0f8ff;border-left:4px solid #0073aa;padding:12px 16px;margin:12px 0;border-radius:0 6px 6px 0">'
+    + '<strong>Resumo:</strong> ' + (p.highlight || p.name) + (p.price_range?' · R$'+p.price_range:'') + (p.rating?' · '+p.rating+'/5':'') + '</div>'
+    + imgHtml
+    + azBtn + shBtn
+    + '<h2>Ficha Técnica</h2>'
+    + '<table style="width:100%;border-collapse:collapse;margin:12px 0">'
+    + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700;width:35%">Marca</td><td style="padding:8px;border:1px solid #ddd">' + (p.brand||'—') + '</td></tr>'
+    + '<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700">Cluster</td><td style="padding:8px;border:1px solid #ddd">' + clusterLabel(p.cluster||'') + '</td></tr>'
+    + (p.rating?'<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700">Avaliação</td><td style="padding:8px;border:1px solid #ddd">' + stars + ' ' + p.rating + '/5 (' + Number(p.review_count||0).toLocaleString('pt-BR') + ' avaliações)</td></tr>':'')
+    + (p.price_range?'<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700">Preço</td><td style="padding:8px;border:1px solid #ddd">R$' + p.price_range + '</td></tr>':'')
+    + (p.concentration?'<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700">Tipo</td><td style="padding:8px;border:1px solid #ddd">' + p.concentration + '</td></tr>':'')
+    + (p.protein_dose?'<tr><td style="padding:8px;border:1px solid #ddd;background:#f9f9f9;font-weight:700">Por dose</td><td style="padding:8px;border:1px solid #ddd">' + p.protein_dose + '</td></tr>':'')
+    + '</table>'
+    + '<p style="font-size:11px;color:#999;margin-top:16px;border-top:1px solid #eee;padding-top:8px">Gerado automaticamente pelo ORION CMS · Links afiliados Amazon/Shopee</p>'
+    + '</div>';
+  const meta = {};
+  if (p.keyword) meta.rank_math_focus_keyword = p.keyword;
+  const payload = {
+    title: p.name,
+    content,
+    status: p.status === 'published' ? 'publish' : 'draft',
+    meta,
+    ...(slug ? {slug} : {})
+  };
+  try {
+    const result = await wpFetch(type + 's', {method:'POST', body:JSON.stringify(payload)});
+    if (!silent) showToast('wp','⚡ "' + p.name + '" enviado ao WP');
+    // Save WP ID back to Supabase
+    if (result.id) {
+      try {
+        await sb('products?id=eq.' + p.id, {method:'PATCH', body:JSON.stringify({notes:(p.notes?p.notes+'\n':'')+'WP ID: '+result.id})});
+        const idx = PRODUCTS.findIndex(x=>x.id===p.id);
+        if(idx>-1) PRODUCTS[idx].notes = (PRODUCTS[idx].notes?PRODUCTS[idx].notes+'\n':'')+'WP ID: '+result.id;
+      } catch(e) {}
+    }
+    return result;
+  } catch(e) {
+    if (!silent) showToast('er','Erro WP: ' + e.message);
+    return null;
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -911,7 +1766,7 @@ async function saveConfig(){
 function showToast(type,msg){
   const c=document.getElementById('toasts');
   const t=document.createElement('div');
-  t.className=`toast ${type}`;t.textContent=msg;c.appendChild(t);
+  t.className='toast '+type;t.textContent=msg;c.appendChild(t);
   setTimeout(()=>t.classList.add('show'),40);
   setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2800);
 }
@@ -919,7 +1774,7 @@ function showToast(type,msg){
 // ═══════════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════════
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeConf();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeConf();closePageModal();}});
 init();
 </script>
 </body>
