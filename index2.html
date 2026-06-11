@@ -797,7 +797,7 @@ async function sb(path, opts={}) {
 // WORDPRESS API CLIENT
 // ═══════════════════════════════════════════════
 function wpAuth() {
-  return 'Basic ' + btoa(WP_USER + ':' + WP_PASS);
+  return 'Basic ' + btoa(WP_USER.trim() + ':' + WP_PASS.trim().replace(/\s+/g, ''));
 }
 
 async function wpFetch(endpoint, opts={}) {
