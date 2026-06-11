@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ORION v3 — CMS + WordPress</title>
+<title>ORION v4 — CMS + WordPress</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root{
@@ -132,8 +132,8 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 
 /* PRODUCT GRID */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.pc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;transition:all .18s;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.pc:hover{border-color:var(--b2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.pc{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--rl);overflow:hidden;transition:all .18s;box-shadow:0 1px 3px rgba(0,0,0,.05);cursor:pointer}
+.pc:hover{border-color:var(--gr-b);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
 .pc.pub{border-color:var(--gr-b);border-left:3px solid var(--gr)}
 .pc.wp-sync{border-color:var(--wp-b)}
 .pc-img{width:100%;height:110px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;position:relative}
@@ -197,6 +197,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 .fd{display:flex;flex-direction:column;gap:4px}
 .fd label{font-size:11px;font-weight:700;color:var(--tx2);letter-spacing:.01em}
 .fd input,.fd select,.fd textarea{padding:8px 12px;background:var(--bg3);border:1px solid var(--b2);border-radius:8px;color:var(--tx);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:all .15s;resize:vertical}
+.fd input[type="url"]{font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all}
 .fd input:focus,.fd select:focus,.fd textarea:focus{border-color:var(--gr);background:var(--bg2);box-shadow:0 0 0 3px var(--gr-d)}
 .fd input::placeholder,.fd textarea::placeholder{color:var(--tx3)}
 .fhint{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--tx3);margin-top:2px}
@@ -321,7 +322,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
     <div class="sb-logo">
       <div class="sb-ico">O</div>
       <div class="sb-name">ORION</div>
-      <span class="sb-ver">v3.0</span>
+      <span class="sb-ver">v4.0</span>
     </div>
     <select class="sb-proj-sel" id="proj-sel" onchange="switchProject(this.value)">
       <option value="">⌛ Carregando projetos...</option>
@@ -619,11 +620,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div class="fs">
         <div class="fst">📷 Imagem</div>
         <div class="img-drop" onclick="document.getElementById('img-file').click()" ondragover="event.preventDefault()" ondrop="dropImg(event)">
-          <div id="img-lbl"><div style="font-size:22px;margin-bottom:4px">🖼</div><div style="font-size:12px;color:var(--tx2);font-weight:600">Clique ou arraste a imagem</div><div style="font-size:10px;color:var(--tx3)">JPG, PNG, WEBP · Máx 2MB · Será enviada ao WP Media</div></div>
+          <div id="img-lbl"><div style="font-size:22px;margin-bottom:4px">🖼</div><div style="font-size:12px;color:var(--tx2);font-weight:600">Clique ou arraste a imagem</div><div style="font-size:10px;color:var(--tx3)">JPG, PNG, WEBP · Máx 3MB · Enviada ao Supabase Storage</div></div>
           <img id="img-prev" class="img-prev" src="" alt="">
         </div>
         <input type="file" id="img-file" accept="image/*" style="display:none" onchange="handleImg(this)">
-        <div class="fd" style="margin-top:6px"><label>Ou URL da imagem</label><input type="url" id="f-img" placeholder="https://..." oninput="prevImgUrl(this.value)"><span class="fhint">URL direta da imagem (Amazon, site da marca, etc.)</span></div>
+        <div class="fd" style="margin-top:8px">
+          <label>Ou cole a URL da imagem diretamente</label>
+          <input type="url" id="f-img" placeholder="https://m.media-amazon.com/images/I/..." oninput="prevImgUrl(this.value)">
+          <span class="fhint">💡 Para pegar URL da Amazon: abra a página do produto → clique com botão direito na imagem → "Copiar endereço de imagem"</span>
+        </div>
       </div>
       <!-- Básico -->
       <div class="fs">
@@ -662,10 +667,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div class="fs">
         <div class="fst">🟠 Amazon</div>
         <div class="aff-section">
+          <div class="fd fg1" style="margin-bottom:9px">
+            <label>URL do link afiliado Amazon</label>
+            <div class="aw"><span class="ai">🟠</span><input type="url" id="f-az-url" placeholder="https://amzn.to/XXXXXXX" style="padding-left:35px"></div>
+            <span class="fhint">Gerado no SiteStripe da Amazon — link curto amzn.to</span>
+          </div>
           <div class="fg">
-            <div class="fd" style="grid-column:1/-1"><label>URL do link afiliado Amazon</label><div class="aw"><span class="ai">🟠</span><input type="url" id="f-az-url" placeholder="https://amzn.to/XXXXXXX" style="padding-left:35px"></div><span class="fhint">Gerado no SiteStripe da Amazon</span></div>
             <div class="fd"><label>Texto do botão</label><input type="text" id="f-az-btn" value="Ver preço na Amazon"></div>
-            <div class="fd"><label>Preço Amazon (opcional)</label><input type="text" id="f-az-price" placeholder="R$ 99,90"></div>
+            <div class="fd"><label>Preço Amazon</label><input type="text" id="f-az-price" placeholder="R$ 99,90"></div>
           </div>
         </div>
       </div>
@@ -673,10 +682,14 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
       <div class="fs">
         <div class="fst">🔴 Shopee</div>
         <div class="aff-section">
+          <div class="fd fg1" style="margin-bottom:9px">
+            <label>URL do link afiliado Shopee</label>
+            <div class="aw"><span class="ai">🔴</span><input type="url" id="f-sh-url" placeholder="https://s.shopee.com.br/XXXXXXX" style="padding-left:35px"></div>
+            <span class="fhint">Gerado no painel Shopee Afiliados</span>
+          </div>
           <div class="fg">
-            <div class="fd" style="grid-column:1/-1"><label>URL do link afiliado Shopee</label><div class="aw"><span class="ai">🔴</span><input type="url" id="f-sh-url" placeholder="https://s.shopee.com.br/XXXXXXX" style="padding-left:35px"></div><span class="fhint">Gerado no painel Shopee Afiliados</span></div>
             <div class="fd"><label>Texto do botão</label><input type="text" id="f-sh-btn" value="Ver opção mais barata na Shopee"></div>
-            <div class="fd"><label>Preço Shopee (opcional)</label><input type="text" id="f-sh-price" placeholder="R$ 79,90"></div>
+            <div class="fd"><label>Preço Shopee</label><input type="text" id="f-sh-price" placeholder="R$ 79,90"></div>
           </div>
         </div>
       </div>
@@ -1110,7 +1123,7 @@ function buildCard(p) {
   const wpBtn = isWpConnected()
     ? '<button class="pa wp" onclick="syncOneToWp(\'' + p.id + '\',event)">⚡ WP</button>'
     : '';
-  return '<div class="pc ' + (p.status==='published'?'pub':'') + '" id="card-' + p.id + '">'
+  return '<div class="pc ' + (p.status==='published'?'pub':'') + '" id="card-' + p.id + '" onclick="openModal(\'edit\',\'' + p.id + '\')">'
     + '<div class="pc-img">' + imgContent + '</div>'
     + '<div class="pc-hd">'
     + '<div class="pc-info">'
@@ -1125,12 +1138,12 @@ function buildCard(p) {
     + (p.price_range?'<span class="mp mp-p">R$' + p.price_range + '</span>':'')
     + (p.review_count?'<span class="mp mp-k">' + Number(p.review_count).toLocaleString('pt-BR') + ' aval.</span>':'')
     + '</div>'
-    + '<div class="pc-aff">' + azL + shL + '</div>'
-    + '<div class="pc-act">'
-    + '<button class="pa edit" onclick="openModal(\'edit\',\'' + p.id + '\')">✏ Editar</button>'
-    + pubBtn
-    + wpBtn
-    + '<button class="pa del" onclick="openConf(\'' + p.id + '\')">🗑</button>'
+    + '<div class="pc-aff" onclick="event.stopPropagation()">' + azL + shL + '</div>'
+    + '<div class="pc-act" onclick="event.stopPropagation()">'
+    + '<button class="pa edit" onclick="openModal(\'edit\',\'' + p.id + '\');event.stopPropagation()">✏ Editar</button>'
+    + pubBtn.replace('onclick="', 'onclick="event.stopPropagation();')
+    + wpBtn.replace('onclick="', 'onclick="event.stopPropagation();')
+    + '<button class="pa del" onclick="openConf(\'' + p.id + '\');event.stopPropagation()">🗑</button>'
     + '</div>'
     + '</div>';
 }
@@ -1279,6 +1292,24 @@ async function saveProd(pub=false) {
   if (!d.name) { showToast('er','⚠ Nome obrigatório'); return; }
   if (!d.project_id) { showToast('er','⚠ Selecione um projeto'); return; }
   if (pub) d.status='published';
+
+  // If there's a file upload pending, send to Supabase Storage first
+  if (imgFile) {
+    const uploadedUrl = await uploadImgToSupabase(imgFile, d.name);
+    if (uploadedUrl) {
+      d.image_url = uploadedUrl;
+      imgFile = null;
+    }
+    // If upload failed but we have a base64, strip it (too large for DB)
+    if (!uploadedUrl && d.image_url && d.image_url.startsWith('data:')) {
+      d.image_url = null;
+      showToast('inf','Imagem não salva — insira uma URL externa no campo de URL');
+    }
+  }
+
+  // Never save base64 to DB
+  if (d.image_url && d.image_url.startsWith('data:')) d.image_url = null;
+
   try {
     let savedProduct;
     if (editId) {
@@ -1374,27 +1405,58 @@ function createFromKw(kw,cl,url){openModal('new');setTimeout(()=>{document.getEl
 // ═══════════════════════════════════════════════
 let imgFile = null;
 function handleImg(input){
-  const f=input.files[0];if(!f)return;
-  if(f.size>2*1024*1024){showToast('er','Imagem maior que 2MB');return;}
+  const f=input.files[0]; if(!f) return;
+  if(f.size>3*1024*1024){showToast('er','Imagem maior que 3MB'); return;}
   imgFile = f;
   const r=new FileReader();
-  r.onload=e=>{const p=document.getElementById('img-prev');p.src=e.target.result;p.classList.add('show');document.getElementById('img-lbl').style.display='none';document.getElementById('f-img').value='';};
+  r.onload=e=>{
+    const prev=document.getElementById('img-prev');
+    prev.src=e.target.result;
+    prev.classList.add('show');
+    document.getElementById('img-lbl').style.display='none';
+    // Store base64 temporarily in f-img so getForm() picks it up
+    document.getElementById('f-img').value = e.target.result;
+    showToast('inf','📷 Imagem carregada — será enviada ao Supabase ao salvar');
+  };
   r.readAsDataURL(f);
 }
-function prevImgUrl(url){if(!url)return;imgFile=null;const p=document.getElementById('img-prev');p.src=url;p.classList.add('show');document.getElementById('img-lbl').style.display='none';}
-function dropImg(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('img-file').files=dt.files;handleImg({files:dt.files});}}
 
-async function uploadImgToWp(file, name) {
-  if (!isWpConnected()) return null;
+function prevImgUrl(url){
+  if(!url) return;
+  imgFile=null;
+  const p=document.getElementById('img-prev');
+  p.src=url; p.classList.add('show');
+  document.getElementById('img-lbl').style.display='none';
+}
+
+function dropImg(e){
+  e.preventDefault();
+  const f=e.dataTransfer.files[0];
+  if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('img-file').files=dt.files;handleImg({files:dt.files});}
+}
+
+async function uploadImgToSupabase(file, productName) {
+  if (!SB_URL || !SB_KEY) return null;
   try {
-    showToast('wp','⬆ Enviando imagem ao WordPress...');
-    const ext = file.name.split('.').pop();
-    const filename = name.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') + '.' + ext;
-    const media = await wpMediaUpload(file, filename);
-    showToast('ok','✓ Imagem enviada ao WP Media');
-    return media.source_url;
+    showToast('wp','⬆ Enviando imagem ao Supabase Storage...');
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const slug = productName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-') + '-' + Date.now() + '.' + ext;
+    const r = await fetch(SB_URL + '/storage/v1/object/product-images/' + slug, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': file.type,
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+    if (!r.ok) throw new Error('Upload: ' + r.statusText);
+    const publicUrl = SB_URL + '/storage/v1/object/public/product-images/' + slug;
+    showToast('ok','✓ Imagem salva no Supabase');
+    return publicUrl;
   } catch(e) {
-    showToast('er','Erro upload imagem: ' + e.message);
+    showToast('er','Erro upload: ' + e.message);
     return null;
   }
 }
