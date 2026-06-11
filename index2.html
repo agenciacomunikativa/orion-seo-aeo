@@ -632,7 +632,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div class="fd" style="grid-column:1/-1"><label>Nome *</label><input type="text" id="f-name" placeholder="Ex: Growth Whey Concentrado 900g"></div>
           <div class="fd"><label>Marca *</label><input type="text" id="f-brand" placeholder="Ex: Growth Supplements"></div>
           <div class="fd"><label>Cluster *</label><select id="f-cluster"><option value="">Selecionar...</option></select></div>
-          <div class="fd"><label>Emoji</label><input type="text" id="f-emoji" placeholder="📦" maxlength="4"></div>
           <div class="fd"><label>Status</label><select id="f-status"><option value="draft">📝 Rascunho</option><option value="review">👁 Em Revisão</option><option value="published">✅ Publicado</option></select></div>
         </div>
       </div>
@@ -649,6 +648,15 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
           <div class="fd"><label>Concentração</label><select id="f-conc"><option value="">— não aplicável —</option><option value="concentrado">Concentrado</option><option value="isolado">Isolado</option><option value="hidrolisado">Hidrolisado</option><option value="blend">Blend (3W)</option></select></div>
         </div>
         <div class="fd fg1" style="margin-top:9px"><label>Destaque</label><input type="text" id="f-hl" placeholder="Mais vendido do Brasil · direto da fábrica"></div>
+      </div>
+      <!-- Link do produto Amazon -->
+      <div class="fs">
+        <div class="fst">🔗 Link do Produto na Amazon (página do produto)</div>
+        <div class="fd fg1">
+          <label>URL da página do produto na Amazon</label>
+          <div class="aw"><span class="ai">🟠</span><input type="url" id="f-az-product-url" placeholder="https://www.amazon.com.br/dp/XXXXXXXXXX" style="padding-left:35px"></div>
+          <span class="fhint">URL da página de produto onde buscou os dados (avaliações, preço, imagem). Diferente do link afiliado.</span>
+        </div>
       </div>
       <!-- Afiliados Amazon -->
       <div class="fs">
@@ -789,6 +797,7 @@ let WP_PAGES = [], WP_PAGES_RAW = [], WP_PAGES_FILTER = '';
 let editId = null, delId = null, editPageId = null;
 let fSrch='', fCl='', fSt='all', kwSrch='', kwSt='all';
 let selectedPageProducts = [], cfgOpen=false, cfgTab='sb';
+let PAGE_SIZE = 30, currentPage = 1;
 
 // ═══════════════════════════════════════════════
 // SUPABASE CLIENT
@@ -994,8 +1003,11 @@ async function switchProject(id) {
 function populateClusterFilter() {
   const clusters = [...new Set(PRODUCTS.map(p => p.cluster).filter(Boolean))].sort();
   const sel = document.getElementById('cl-filter');
-  sel.innerHTML = '<option value="">Todos clusters</option>' +
-    clusters.map(c => '<option value="' + c + '">' + clusterLabel(c) + '</option>').join('');
+  sel.innerHTML = '<option value="">Todos (' + PRODUCTS.length + ')</option>' +
+    clusters.map(c => {
+      const cnt = PRODUCTS.filter(p=>p.cluster===c).length;
+      return '<option value="' + c + '">' + clusterLabel(c) + ' (' + cnt + ')</option>';
+    }).join('');
 }
 
 // ═══════════════════════════════════════════════
@@ -1093,8 +1105,8 @@ function buildCard(p) {
     ? '<button class="pa unp" onclick="togglePub(\'' + p.id + '\',event)">↓ Despub.</button>'
     : '<button class="pa pub" onclick="togglePub(\'' + p.id + '\',event)">✅ Pub.</button>';
   const imgContent = p.image_url
-    ? '<img src="' + p.image_url + '" alt="' + p.name + '" loading="lazy" onerror="this.style.display=\'none\'">'
-    : (p.emoji || '📦');
+    ? '<img src="' + p.image_url + '" alt="' + p.name + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<span style=font-size:38px>📦</span>\'">'
+    : '<span style="font-size:38px">📦</span>';
   const wpBtn = isWpConnected()
     ? '<button class="pa wp" onclick="syncOneToWp(\'' + p.id + '\',event)">⚡ WP</button>'
     : '';
@@ -1126,16 +1138,60 @@ function buildCard(p) {
 // ═══════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════
-function renderProds() {
+function renderProds(page) {
+  if(page !== undefined) currentPage = page;
   const ps = PRODUCTS.filter(p => {
     const ms = !fSrch || p.name?.toLowerCase().includes(fSrch.toLowerCase()) || p.brand?.toLowerCase().includes(fSrch.toLowerCase());
     const mc = !fCl || p.cluster === fCl;
     const mst = fSt==='all' || p.status===fSt;
     return ms&&mc&&mst;
   });
+  const total = ps.length;
+  const totalPages = Math.max(1, Math.ceil(total/PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = 1;
+  const start = (currentPage-1)*PAGE_SIZE;
+  const pageItems = ps.slice(start, start+PAGE_SIZE);
   const g = document.getElementById('pgrid');
-  g.innerHTML = ps.length ? ps.map(buildCard).join('') :
-    '<div class="empty" style="grid-column:1/-1"><div class="empty-i">📦</div><div class="empty-t">' + (PRODUCTS.length===0?'Nenhum produto neste projeto':'Nenhum resultado') + '</div></div>';
+  if(!total) {
+    g.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-i">📦</div><div class="empty-t">' + (PRODUCTS.length===0?'Nenhum produto neste projeto':'Nenhum resultado') + '</div></div>';
+    renderPagination(0,1,1);
+    return;
+  }
+  g.innerHTML = pageItems.map(buildCard).join('');
+  renderPagination(total, currentPage, totalPages);
+  // Update cluster counts in filter select
+  const sel = document.getElementById('cl-filter');
+  if(sel) {
+    const clusters = [...new Set(PRODUCTS.map(p=>p.cluster).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">Todos (' + PRODUCTS.length + ')</option>' +
+      clusters.map(c => {
+        const cnt = PRODUCTS.filter(p=>p.cluster===c).length;
+        return '<option value="' + c + '">' + clusterLabel(c) + ' (' + cnt + ')</option>';
+      }).join('');
+    sel.value = fCl;
+  }
+}
+
+function renderPagination(total, page, totalPages) {
+  let el = document.getElementById('pagination');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'pagination';
+    el.style.cssText = 'display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;justify-content:space-between';
+    document.getElementById('pgrid').after(el);
+  }
+  if(totalPages <= 1) { el.innerHTML='<div style="font-size:12px;color:var(--tx3)">' + total + ' produtos</div>'; return; }
+  const start = (page-1)*PAGE_SIZE+1, end = Math.min(page*PAGE_SIZE, total);
+  let btns = '';
+  for(let i=1;i<=totalPages;i++) {
+    const on = i===page ? 'background:var(--gr);color:#fff;border-color:var(--gr)' : 'background:var(--bg2);color:var(--tx2)';
+    btns += '<button onclick="renderProds(' + i + ')" style="' + on + ';border:1px solid var(--b2);border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:\'Plus Jakarta Sans\',sans-serif">' + i + '</button>';
+  }
+  el.innerHTML = '<div style="font-size:12px;color:var(--tx3)">Mostrando ' + start + '–' + end + ' de ' + total + ' produtos</div><div style="display:flex;gap:5px;flex-wrap:wrap">'
+    + (page>1?'<button onclick="renderProds(' + (page-1) + ')" style="background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:\'Plus Jakarta Sans\',sans-serif;color:var(--tx2)">← Anterior</button>':'')
+    + btns
+    + (page<totalPages?'<button onclick="renderProds(' + (page+1) + ')" style="background:var(--bg2);border:1px solid var(--b2);border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:\'Plus Jakarta Sans\',sans-serif;color:var(--tx2)">Próxima →</button>':'')
+    + '</div>';
 }
 
 function renderFiltered(st,gid) {
@@ -1145,9 +1201,9 @@ function renderFiltered(st,gid) {
     '<div class="empty" style="grid-column:1/-1"><div class="empty-i">📭</div><div class="empty-t">Nenhum produto aqui</div></div>';
 }
 
-function filterP(v){fSrch=v;renderProds();}
-function filterCl(v){fCl=v;renderProds();}
-function filterSt(v,b){fSt=v;document.querySelectorAll('#page-produtos .ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderProds();}
+function filterP(v){fSrch=v;currentPage=1;renderProds();}
+function filterCl(v){fCl=v;currentPage=1;renderProds();}
+function filterSt(v,b){fSt=v;currentPage=1;document.querySelectorAll('#page-produtos .ftab').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderProds();}
 
 // ═══════════════════════════════════════════════
 // MODAL PRODUTO
@@ -1161,7 +1217,7 @@ function populateClusterModal() {
 }
 
 function clearForm() {
-  ['f-name','f-brand','f-emoji','f-rating','f-rcount','f-price','f-protein','f-hl','f-az-url','f-az-btn','f-az-price','f-sh-url','f-sh-btn','f-sh-price','f-url','f-kw','f-notes','f-img'].forEach(id=>{
+  ['f-name','f-brand','f-rating','f-rcount','f-price','f-protein','f-hl','f-az-url','f-az-btn','f-az-price','f-az-product-url','f-sh-url','f-sh-btn','f-sh-price','f-url','f-kw','f-notes','f-img'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('f-az-btn').value='Ver preço na Amazon';
@@ -1181,8 +1237,14 @@ function openModal(mode, id) {
     const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
     document.getElementById('modal-t').textContent = 'Editar Produto';
     document.getElementById('modal-id-lbl').textContent = 'ID: ' + p.id;
-    const map = [['f-name',p.name],['f-brand',p.brand],['f-emoji',p.emoji],['f-rating',p.rating],['f-rcount',p.review_count],['f-price',p.price_range],['f-protein',p.protein_dose],['f-hl',p.highlight],['f-az-url',p.amazon_url],['f-az-btn',p.amazon_btn||'Ver preço na Amazon'],['f-az-price',p.amazon_price],['f-sh-url',p.shopee_url],['f-sh-btn',p.shopee_btn||'Ver opção mais barata na Shopee'],['f-sh-price',p.shopee_price],['f-url',p.review_url],['f-kw',p.keyword],['f-notes',p.notes],['f-img',p.image_url]];
+    const map = [['f-name',p.name],['f-brand',p.brand],['f-rating',p.rating],['f-rcount',p.review_count],['f-price',p.price_range],['f-protein',p.protein_dose],['f-hl',p.highlight],['f-az-url',p.amazon_url],['f-az-btn',p.amazon_btn||'Ver preço na Amazon'],['f-az-price',p.amazon_price],['f-sh-url',p.shopee_url],['f-sh-btn',p.shopee_btn||'Ver opção mais barata na Shopee'],['f-sh-price',p.shopee_price],['f-url',p.review_url],['f-kw',p.keyword],['f-img',p.image_url]];
     map.forEach(([fid,val])=>{const el=document.getElementById(fid);if(el&&val!=null)el.value=val;});
+    // Parse amazon product URL from notes
+    const notesRaw = p.notes||'';
+    const azProdMatch = notesRaw.match(/Produto Amazon: (https?:\/\/[^\n]+)/);
+    const cleanNotes = notesRaw.replace(/\nProduto Amazon: https?:\/\/[^\n]+/,'');
+    const notesEl = document.getElementById('f-notes'); if(notesEl) notesEl.value = cleanNotes;
+    const azProdEl = document.getElementById('f-az-product-url'); if(azProdEl) azProdEl.value = azProdMatch?azProdMatch[1]:'';
     document.getElementById('f-cluster').value=p.cluster||'';
     document.getElementById('f-status').value=p.status||'draft';
     document.getElementById('f-conc').value=p.concentration||'';
@@ -1201,12 +1263,13 @@ function closeModalOv(e){if(e.target===document.getElementById('modal-ov'))close
 function getForm() {
   const v = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
   return {
-    name:v('f-name'), brand:v('f-brand'), emoji:v('f-emoji')||'📦', cluster:v('f-cluster'),
+    name:v('f-name'), brand:v('f-brand'), cluster:v('f-cluster'),
     status:v('f-status'), rating:parseFloat(v('f-rating'))||null, review_count:parseInt(v('f-rcount'))||null,
     price_range:v('f-price'), protein_dose:v('f-protein'), highlight:v('f-hl'), concentration:v('f-conc'),
     amazon_url:v('f-az-url')||null, amazon_btn:v('f-az-btn'), amazon_price:v('f-az-price')||null,
     shopee_url:v('f-sh-url')||null, shopee_btn:v('f-sh-btn'), shopee_price:v('f-sh-price')||null,
-    image_url:v('f-img')||null, review_url:v('f-url'), keyword:v('f-kw'), notes:v('f-notes'),
+    image_url:v('f-img')||null, review_url:v('f-url'), keyword:v('f-kw'),
+    notes:(v('f-notes')||'') + (v('f-az-product-url') ? '\nProduto Amazon: '+v('f-az-product-url') : ''),
     project_id: CURRENT_PROJECT?.id
   };
 }
