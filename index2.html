@@ -1143,6 +1143,7 @@ function buildCard(p) {
     + '<button class="pa edit" onclick="openModal(\'edit\',\'' + p.id + '\');event.stopPropagation()">✏ Editar</button>'
     + pubBtn.replace('onclick="', 'onclick="event.stopPropagation();')
     + wpBtn.replace('onclick="', 'onclick="event.stopPropagation();')
+    + '<button class="pa" onclick="copyShortcode(\'' + p.id + '\',\'' + p.name.replace(/'/g,"\\'") + '\');event.stopPropagation()">📋 SC</button>'
     + '<button class="pa del" onclick="openConf(\'' + p.id + '\');event.stopPropagation()">🗑</button>'
     + '</div>'
     + '</div>';
@@ -1350,6 +1351,15 @@ async function togglePub(id, e) {
     updateStats(); renderProds();
     showToast(newSt==='published'?'ok':'inf', newSt==='published'?'✅ Publicado':'↓ Despublicado');
   } catch(e) { showToast('er','Erro: '+e.message); }
+}
+
+function copyShortcode(id, name) {
+  const sc = '[orion_produto id="' + id + '"]';
+  navigator.clipboard.writeText(sc).then(()=>{
+    showToast('ok','📋 Shortcode copiado: ' + name);
+  }).catch(()=>{
+    showToast('inf', sc);
+  });
 }
 
 function openConf(id) {
