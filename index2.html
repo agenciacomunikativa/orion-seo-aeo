@@ -1451,7 +1451,10 @@ async function uploadImgToSupabase(file, productName) {
       },
       body: file
     });
-    if (!r.ok) throw new Error('Upload: ' + r.statusText);
+    if (!r.ok) {
+      const errBody = await r.text().catch(()=>r.statusText);
+      throw new Error(r.status + ': ' + errBody);
+    }
     const publicUrl = SB_URL + '/storage/v1/object/public/product-images/' + slug;
     showToast('ok','✓ Imagem salva no Supabase');
     return publicUrl;
